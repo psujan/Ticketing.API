@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Ticketing.API.Data;
+using Ticketing.API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,13 +16,17 @@ builder.Services.AddDbContext<TicketingDbContext>(options => options.UseSqlServe
 builder.Services.AddDbContext<TicketingAuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TicketingConnectionString")));
 
 
+//add app services
+builder.Services.RegisterService(builder);
+
 var app = builder.Build();
 
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
+app.MapGet("/", () => "Welcome to Ticketing API");
 app.Run();
