@@ -20,18 +20,15 @@ namespace Ticketing.API.Controllers.Auth
         private readonly UserManager<IdentityUser> userManager;
         private readonly IUserManagerRepository userManagerRepository;
         private readonly ITokenRepository tokenRepository;
-        private readonly SignInManager<IdentityUser> signInManager;
 
         public AuthController(UserManager<IdentityUser> userManager , 
             IUserManagerRepository userManagerRepository , 
-            ITokenRepository tokenRepository ,
-            SignInManager<IdentityUser> signInManager
+            ITokenRepository tokenRepository 
         )
         {
             this.userManager = userManager;
             this.userManagerRepository = userManagerRepository;
             this.tokenRepository = tokenRepository;
-            this.signInManager = signInManager;
         }
 
         [HttpPost]
@@ -106,7 +103,7 @@ namespace Ticketing.API.Controllers.Auth
             {
                 Success = true,
                 Message = "Login Sucessful",
-                Data = new { Token =  jwtToken }
+                Data = new { Token =  jwtToken , Roles = roles }
             });
 
         }
@@ -116,7 +113,7 @@ namespace Ticketing.API.Controllers.Auth
         [Route("logout")]
         public async Task<IActionResult> LogOut()
         {
-            await signInManager.SignOutAsync();
+            
             return Ok(new ApiResponseService<string>()
             {
                 Success = true,

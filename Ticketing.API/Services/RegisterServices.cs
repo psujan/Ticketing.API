@@ -32,7 +32,12 @@ namespace Ticketing.API.Services
                 options.Password.RequiredUniqueChars = 1;
             });
 
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(
                 options => options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
