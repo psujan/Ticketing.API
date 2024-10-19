@@ -4,7 +4,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Ticketing.API.Data;
+using Ticketing.API.Repositories;
 using Ticketing.API.Repositories.Auth;
+using Ticketing.API.Repositories.Interfaces;
 using Ticketing.API.Repositories.Interfaces.Auth;
 
 namespace Ticketing.API.Services
@@ -16,7 +18,6 @@ namespace Ticketing.API.Services
             //AUTH
             services.AddScoped<IUserManagerRepository, UserManagerRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
-
             services.AddIdentity<IdentityUser , IdentityRole>()
                     .AddRoles<IdentityRole>()
                     .AddTokenProvider<DataProtectorTokenProvider<IdentityUser>>("Ticketing")
@@ -49,6 +50,11 @@ namespace Ticketing.API.Services
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
                 }
             );
+
+            /*
+             * register repositories here
+             */
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             return services;
         }

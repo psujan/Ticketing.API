@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Ticketing.API.Model.Domain;
 
 namespace Ticketing.API.Data
 {
     public class TicketingDbContext : DbContext
     {
-        public TicketingDbContext(DbContextOptions dbContextOptions):base(dbContextOptions)
+
+        public DbSet<Category> Category { get; set; }
+        public TicketingDbContext(DbContextOptions<TicketingDbContext> dbContextOptions):base(dbContextOptions)
         {
-            
+           
         }
     }
 }

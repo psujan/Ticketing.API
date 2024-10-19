@@ -5,7 +5,7 @@ namespace Ticketing.API.Repositories.Interfaces.Auth
 {
     public interface IUserManagerRepository
     {
-        Task<IdentityUser?> RegisterUser(RegisterRequest request);
+        Task<IdentityUser?> RegisterUser(RegisterRequestDto request);
         Task<IdentityUser?> GetUserByUserName(string userName);
         Task<Boolean> CheckPassword(IdentityUser user, string password);
         Task<List<string>?> GetRoles(IdentityUser user);

@@ -7,12 +7,12 @@ namespace Ticketing.API.Repositories.Auth
     public class UserManagerRepository : IUserManagerRepository
     {
         private readonly UserManager<IdentityUser> userManager;
-        private static readonly string DefaultRole = "user";
+        private static readonly string DefaultRole = "User";
         public UserManagerRepository(UserManager<IdentityUser> userManager) 
         {
             this.userManager = userManager;
         }
-        public async Task<IdentityUser?> RegisterUser(RegisterRequest request)
+        public async Task<IdentityUser?> RegisterUser(RegisterRequestDto request)
         {
             var identityUser = new IdentityUser
             {

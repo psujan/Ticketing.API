@@ -1,9 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using Ticketing.API.Data;
 using Ticketing.API.Services;
+using DotNetEnv;
 
 var builder = WebApplication.CreateBuilder(args);
+DotNetEnv.Env.Load();
+System.Diagnostics.Debug.WriteLine("Hello APP");
 
+System.Diagnostics.Debug.WriteLine(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"));
+builder.Configuration.AddEnvironmentVariables();
 // Add services to the container.
 
 builder.Services.AddControllers();

@@ -2,7 +2,7 @@
 
 namespace Ticketing.API.Model.Dto
 {
-    public class LoginRequest
+    public class RegisterRequestDto
     {
         [Required]
         public string UserName { get; set; }
