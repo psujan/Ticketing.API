@@ -4,6 +4,7 @@ namespace Ticketing.API.Model
 {
     public class Base<T>
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public T Id { get; set; }
 
         public DateTime CreatedAt { get; set; }

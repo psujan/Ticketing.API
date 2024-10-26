@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ticketing.API.Data;
 
@@ -11,9 +12,11 @@ using Ticketing.API.Data;
 namespace Ticketing.API.Migrations.TicketingDb
 {
     [DbContext(typeof(TicketingDbContext))]
-    partial class TicketingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241024095510_Ticket and File Db")]
+    partial class TicketandFileDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,9 +114,6 @@ namespace Ticketing.API.Migrations.TicketingDb
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("MimeType")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(max)");
 
@@ -124,11 +124,14 @@ namespace Ticketing.API.Migrations.TicketingDb
                     b.Property<string>("OriginalName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Path")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<double?>("Path")
+                        .HasColumnType("float");
 
                     b.Property<double?>("Size")
                         .HasColumnType("float");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");

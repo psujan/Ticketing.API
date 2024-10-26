@@ -45,7 +45,7 @@ namespace Ticketing.API.Controllers
             try
             {
                 var category = await categoryRepository.Create(categoryRequest);
-                return Ok(new ApiResponseService<Category>()
+                return Ok(new ApiResponse<Category>()
                 {
                     Success = true,
                     Message = "Category Created Successfully",
@@ -54,7 +54,7 @@ namespace Ticketing.API.Controllers
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new ApiResponseService<string>()
+                return new ObjectResult(new ApiResponse<string>()
                 {
                     Success = false,
                     Message = ex.Message,
@@ -75,7 +75,7 @@ namespace Ticketing.API.Controllers
             try
             {
                 var category = await categoryRepository.Update(id , categoryRequest);
-                return Ok(new ApiResponseService<Category?>()
+                return Ok(new ApiResponse<Category?>()
                 {
                     Success = category != null ? true : false,
                     Message = category != null ? "Category Updated Successfully" :"Category Not Found",
@@ -84,7 +84,7 @@ namespace Ticketing.API.Controllers
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new ApiResponseService<string>()
+                return new ObjectResult(new ApiResponse<string>()
                 {
                     Success = false,
                     Message = ex.Message,
@@ -104,7 +104,7 @@ namespace Ticketing.API.Controllers
             try
             {
                 var category = await categoryRepository.Delete(id);
-                return Ok(new ApiResponseService<Category?>()
+                return Ok(new ApiResponse<Category?>()
                 {
                     Success = category != null ? true : false,
                     Message = category != null ? "Category Deleted Successfully" : "Category Not Found",
@@ -113,7 +113,7 @@ namespace Ticketing.API.Controllers
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new ApiResponseService<string>()
+                return new ObjectResult(new ApiResponse<string>()
                 {
                     Success = false,
                     Message = ex.Message,

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Ticketing.API.Model;
 using Ticketing.API.Model.Dto;
 using Ticketing.API.Repositories.Auth;
 using Ticketing.API.Repositories.Interfaces.Auth;
@@ -38,7 +39,7 @@ namespace Ticketing.API.Controllers.Auth
             var identityUser = await userManagerRepository.RegisterUser(registerRequest);
             if (identityUser == null) 
             {
-                return BadRequest(new ApiResponseService<string>()
+                return BadRequest(new ApiResponse<string>()
                 {
                     Success = false,
                     Message = "Registration Failed At The Moment",
@@ -46,7 +47,7 @@ namespace Ticketing.API.Controllers.Auth
                 });
             }
 
-            return Ok(new ApiResponseService<IdentityUser?>()
+            return Ok(new ApiResponse<IdentityUser?>()
             {
                 Success = true,
                 Message = "User Registered Successfully",
@@ -61,7 +62,7 @@ namespace Ticketing.API.Controllers.Auth
             var user = await userManagerRepository.GetUserByUserName(loginRequest.UserName);
             if (user == null)
             {
-                return BadRequest(new ApiResponseService<string>()
+                return BadRequest(new ApiResponse<string>()
                 {
                     Success = false,
                     Message = "No user found with given email",
@@ -73,7 +74,7 @@ namespace Ticketing.API.Controllers.Auth
 
             if(!passwordMatch)
             {
-                return BadRequest(new ApiResponseService<string>()
+                return BadRequest(new ApiResponse<string>()
                 {
                     Success = false,
                     Message = "Password Doesn't Match",
@@ -86,7 +87,7 @@ namespace Ticketing.API.Controllers.Auth
 
             if (roles == null) 
             {
-                return new ObjectResult(new ApiResponseService<string>()
+                return new ObjectResult(new ApiResponse<string>()
                 {
                     Success = false,
                     Message = "User doesn't have a defined role",
@@ -99,7 +100,7 @@ namespace Ticketing.API.Controllers.Auth
 
             var jwtToken = tokenRepository.CreateJWTToken(user, roles.ToList());
 
-            return Ok(new ApiResponseService<object>()
+            return Ok(new ApiResponse<object>()
             {
                 Success = true,
                 Message = "Login Sucessful",
@@ -114,7 +115,7 @@ namespace Ticketing.API.Controllers.Auth
         public async Task<IActionResult> LogOut()
         {
             
-            return Ok(new ApiResponseService<string>()
+            return Ok(new ApiResponse<string>()
             {
                 Success = true,
                 Message = "Logout Sucessful",

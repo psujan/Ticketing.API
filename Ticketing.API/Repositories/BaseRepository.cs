@@ -14,13 +14,13 @@ namespace Ticketing.API.Repositories
             this.dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<T>> GetAll()
+        public async virtual Task<IEnumerable<T>> GetAll()
         {
             var data = await dbContext.Set<T>().AsNoTracking().ToListAsync();
             return data;
         }
 
-        public async Task<T?> GetById(int id)
+        public async virtual Task<T?> GetById(int id)
         {
             var data = await dbContext.Set<T>().FindAsync(id);
             if (data == null)
@@ -31,7 +31,7 @@ namespace Ticketing.API.Repositories
             return data;
         }
 
-        public async Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int pageSize)
+        public async virtual Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int pageSize)
         {
             var query = dbContext.Set<T>()
                 .Skip((pageNumber - 1) * pageSize)

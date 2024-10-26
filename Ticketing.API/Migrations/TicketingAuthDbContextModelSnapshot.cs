@@ -68,7 +68,7 @@ namespace Ticketing.API.Migrations
                             Id = "3",
                             ConcurrencyStamp = "3",
                             Name = "User",
-                            NormalizedName = "MODERATOR"
+                            NormalizedName = "USER"
                         },
                         new
                         {
