@@ -3,6 +3,7 @@ using Ticketing.API.Data;
 using Ticketing.API.Services;
 using DotNetEnv;
 using Ticketing.API.Data.Seeder;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
@@ -21,7 +22,11 @@ builder.Services.AddCors( options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
