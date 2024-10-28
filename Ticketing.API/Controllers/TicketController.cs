@@ -8,6 +8,7 @@ using Ticketing.API.Repositories;
 using Ticketing.API.Repositories.Interfaces;
 using System.Net;
 using Ticketing.API.Validations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Ticketing.API.Controllers
 {
@@ -20,6 +21,20 @@ namespace Ticketing.API.Controllers
         public TicketController(ITicketRepository ticketRepository)
         {
             this.ticketRepository = ticketRepository;
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("paginated")]
+        public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, int pageSize = 10)
+        {
+            var data = await ticketRepository.GetPaginatedData(pageNumber , pageSize);
+            return Ok(new ApiResponse<PaginatedModel<Ticket>>()
+            {
+                Success = true,
+                Message = "Data Fetched Successfully",
+                Data = data
+            });
         }
 
        

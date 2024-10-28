@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using Ticketing.API.Data;
 using Ticketing.API.Model;
 using Ticketing.API.Repositories.Interfaces;
@@ -7,7 +9,7 @@ namespace Ticketing.API.Repositories
 {
     public class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        private readonly TicketingDbContext dbContext;
+        public readonly TicketingDbContext dbContext;
 
         public BaseRepository(TicketingDbContext dbContext)
         {
@@ -20,29 +22,49 @@ namespace Ticketing.API.Repositories
             return data;
         }
 
-        public async virtual Task<T?> GetById(int id)
-        {
-            var data = await dbContext.Set<T>().FindAsync(id);
-            if (data == null)
-            {
-                return null;
-            }
+       
 
+        public async virtual Task<T?> GetById(int id)
+        {  
+            var data = await dbContext.Set<T>().FindAsync(id);
             return data;
         }
 
-        public async virtual Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int pageSize)
+        /*public async virtual Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int pageSize , List<Expression<Func<T, object>>>? includes = null)
         {
-            var query = dbContext.Set<T>()
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .AsNoTracking();
+            IQueryable<T> query = dbContext.Set<T>();
 
-            var data = await query.ToListAsync();
+            if(includes != null)
+            {
+                foreach(var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            var rows = query.Skip((pageNumber - 1) * pageSize)
+                             .Take(pageSize)
+                               .AsNoTracking();
+
+            var data = await rows.ToListAsync();
             var totalCount = await dbContext.Set<T>().CountAsync();
             var resultCount =  data.Count();
 
-            return new PaginatedModel<T>(data, totalCount , resultCount);
+            return new PaginatedModel<T>(data, totalCount , resultCount  , pageNumber , pageSize);
+        }*/
+        public async virtual Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int pageSize)
+        {
+            IQueryable<T> query = dbContext.Set<T>();
+           
+            var rows = query.Skip((pageNumber - 1) * pageSize)
+                             .Take(pageSize)
+                               .AsNoTracking();
+
+            var data = await rows.ToListAsync();
+            var totalCount = await dbContext.Set<T>().CountAsync();
+            var resultCount =  data.Count();
+
+            return new PaginatedModel<T>(data, totalCount , resultCount  , pageNumber , pageSize);
         }
     }
 }

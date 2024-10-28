@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Ticketing.API.Repositories.Interfaces;
 
 namespace Ticketing.API.Model
 {
-    public class Base<T>
+    public class Base<T> 
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public T Id { get; set; }

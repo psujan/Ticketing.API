@@ -1,8 +1,9 @@
-﻿using Ticketing.API.Model;
+﻿using System.Linq.Expressions;
+using Ticketing.API.Model;
 
 namespace Ticketing.API.Repositories.Interfaces
 {
-    public interface IBaseRepository<T> where T: class
+    public interface IBaseRepository<T> where T: class 
     {
         Task<IEnumerable<T>> GetAll();
 
