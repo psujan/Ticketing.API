@@ -63,7 +63,7 @@ namespace Ticketing.API.Repositories
             //await UploadFiles();
             if(ticketRequestDto.Files != null)
             {
-                await UploadTicketFiles(ticket.Id, "Ticket" , ticketRequestDto.Files);
+                var ticketFiles = await UploadTicketFiles(ticket.Id, "Ticket" , ticketRequestDto.Files);
             }
             return ticket;
         }
@@ -102,7 +102,7 @@ namespace Ticketing.API.Repositories
                 return null;
             }
 
-            var fileList = await fileRepository.UploadFiles(files, Model , "Uploads/Tickets");
+            var fileList = await fileRepository.UploadFiles(files, Model , "Uploads/Tickets/");
             var ticketFiles = new List<TicketFile>();
             foreach (var file in fileList)
             {
@@ -116,15 +116,32 @@ namespace Ticketing.API.Repositories
                 );
             }
             await dbContext.TicketFile.AddRangeAsync(ticketFiles);
+            await dbContext.SaveChangesAsync();
             return ticketFiles;
         }
 
         public async Task<Ticket ?> Delete(int id)
         {
-            var ticket = await dbContext.Ticket.FindAsync(id);
+            var ticket = await dbContext.Ticket
+                        .Include(ticket => ticket.TicketFiles)
+                        .ThenInclude(ticketFile => ticketFile.File)
+                        .FirstOrDefaultAsync(x => x.Id == id);
             if (ticket == null)
             {
                 return null;
+            }
+
+            // Delete Files From Storage
+            if(ticket.TicketFiles !=  null && ticket.TicketFiles.Count > 0)
+            {
+                foreach(var f in ticket.TicketFiles)
+                {
+                    if(f.File != null)
+                    {
+                        fileRepository.DeleteFile("Uploads/Tickets/" , f.File.Name);
+                    }
+
+                }
             }
             dbContext.Ticket.Remove(ticket);
             await dbContext.SaveChangesAsync();

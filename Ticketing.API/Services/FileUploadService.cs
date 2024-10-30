@@ -57,5 +57,19 @@ namespace Ticketing.API.Services
                 return null;  
             }
         }
+
+        public void DeleteFileIfExists(string uploadedDirectoryPath, string fileName)
+        {
+            string storagePath = Path.Combine(environment.ContentRootPath, uploadedDirectoryPath);
+            // Combine the directory path and file name to get the full file path
+            string filePath = Path.Combine(storagePath, fileName);
+
+            // Check if the file exists
+            if (File.Exists(filePath))
+            {
+                // Delete the file
+                File.Delete(filePath);
+            }
+        }
     }
 }

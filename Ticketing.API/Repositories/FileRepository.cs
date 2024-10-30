@@ -57,6 +57,10 @@ namespace Ticketing.API.Repositories
             return fileList;
         }
 
+        public void DeleteFile(string uploadDir , string fileName)
+        {
+            uploadService.DeleteFileIfExists(uploadDir , fileName);
+        }
         
     }
 }
