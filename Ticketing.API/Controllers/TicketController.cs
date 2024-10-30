@@ -83,5 +83,65 @@ namespace Ticketing.API.Controllers
             }
 
         }
+
+        [HttpPut]
+        [Authorize]
+        [ValidateModel]
+        [Route("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update([FromRoute]int id , [FromForm] TicketRequestDto ticketRequest)
+        {
+            try
+            {
+                var ticket = await ticketRepository.Update(id, ticketRequest);
+                return Ok(new ApiResponse<Ticket>()
+                {
+                    Success = ticket != null ? true : false,
+                    Message = ticket != null ? "Ticket Updated Successfully" : "Ticket Not Found",
+                    Data = ticket
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "SuperAdmin")]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            try
+            {
+                var ticket = await ticketRepository.Delete(id);
+                return Ok(new ApiResponse<Ticket>()
+                {
+                    Success = ticket != null ? true : false,
+                    Message = ticket != null ? "Ticket Deleted Successfully" : "Ticket Not Found",
+                    Data = ticket
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
     }
 }
