@@ -16,9 +16,9 @@ namespace Ticketing.API.Repositories
             this.uploadService = uploadService;
             this.dbContext = dbContext;
         }
-        public async Task<Model.Domain.File?> UploadFile(IFormFile file , string? model)
+        public async Task<Model.Domain.File?> UploadFile(IFormFile file , string? model , string ? uploadDir)
         {
-            FileUploadModel? uploadedFile = await uploadService.UploadFile(file , model);
+            FileUploadModel? uploadedFile = await uploadService.UploadFile(file , model , uploadDir);
             if(uploadedFile == null)
             {
                 return null;
@@ -40,7 +40,7 @@ namespace Ticketing.API.Repositories
         }
 
        
-        public async Task<IEnumerable<Model.Domain.File>> UploadFiles(List<IFormFile> filesToBeUploaded , string? model)
+        public async Task<IEnumerable<Model.Domain.File>> UploadFiles(List<IFormFile> filesToBeUploaded , string? model, string? uploadDir)
         {
             if(filesToBeUploaded == null)
             {
@@ -50,13 +50,17 @@ namespace Ticketing.API.Repositories
             var fileList = new List<Model.Domain.File>();
             foreach (var file in filesToBeUploaded)
             {
-                var result = await UploadFile(file , model);
+                var result = await UploadFile(file , model , uploadDir);
                 fileList.Add(result);
             }
 
             return fileList;
         }
 
+        public void DeleteFile(string uploadDir , string fileName)
+        {
+            uploadService.DeleteFileIfExists(uploadDir , fileName);
+        }
         
     }
 }

@@ -30,6 +30,6 @@ namespace Ticketing.API.Model.Dto
         [MaxFileSize (2 * 1024 *1024)]
         [MaxFileCount (3)]
         [AllowedMimeType]
-        public List<IFormFile> Files { get; set; }
+        public List<IFormFile>? Files { get; set; }
     }
 }

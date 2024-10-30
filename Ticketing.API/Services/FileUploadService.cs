@@ -6,25 +6,30 @@ namespace Ticketing.API.Services
     {
         public readonly static string Default_Upload_Dir = "Uploads";
 
-        private readonly string storagePath;
-        public FileUploadService(IHostEnvironment environment)
-        {
-            storagePath = Path.Combine(environment.ContentRootPath, Default_Upload_Dir);
+        private readonly IHostEnvironment environment;
 
-            // Create the directory if it doesn't exist
-            if (!Directory.Exists(storagePath))
-            {
-                Directory.CreateDirectory(storagePath); 
-            }
+        public FileUploadService(IHostEnvironment env)
+        {
+            environment = env;
         }
 
-        public async Task<UploadFile ?> UploadFile(IFormFile file , string? modelName)
+        public async Task<UploadFile ?> UploadFile(IFormFile file , string? modelName , string ? uploadDir)
         {
             try
             {
                 if (file.Length <= 0)
                 {
                     return null;
+                }
+
+                uploadDir = uploadDir ?? Default_Upload_Dir;
+
+                string storagePath = Path.Combine(environment.ContentRootPath, uploadDir);
+
+                // Create the directory if it doesn't exist
+                if (!Directory.Exists(storagePath))
+                {
+                    Directory.CreateDirectory(storagePath);
                 }
 
                 string renamed = modelName != null ? modelName + "_" + Guid.NewGuid().ToString() + Path.GetExtension(file.FileName)
@@ -44,12 +49,26 @@ namespace Ticketing.API.Services
                     OriginalName =  file.FileName,
                     ByteSize =  file.Length,
                     Extension = Path.GetExtension(filePath),
-                    Path =  filePath
+                    Path = uploadDir  + renamed 
                 };
             }
             catch (Exception ex) 
             {
                 return null;  
+            }
+        }
+
+        public void DeleteFileIfExists(string uploadedDirectoryPath, string fileName)
+        {
+            string storagePath = Path.Combine(environment.ContentRootPath, uploadedDirectoryPath);
+            // Combine the directory path and file name to get the full file path
+            string filePath = Path.Combine(storagePath, fileName);
+
+            // Check if the file exists
+            if (File.Exists(filePath))
+            {
+                // Delete the file
+                File.Delete(filePath);
             }
         }
     }
