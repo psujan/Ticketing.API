@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
+using Ticketing.API.Model.Domain;
 
 namespace Ticketing.API.Data
 {
-    public class TicketingAuthDbContext:IdentityDbContext
+    public class TicketingAuthDbContext : IdentityDbContext
     {
+        public DbSet<User> User { get; set; }
+        
         public TicketingAuthDbContext(DbContextOptions<TicketingAuthDbContext> options) : base(options)
         {
             
@@ -13,7 +17,11 @@ namespace Ticketing.API.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+
+            
             base.OnModelCreating(builder);
+            builder.Entity<User>().ToTable("AspNetUsers");
+
 
             var roles = new List<IdentityRole> {
                 new IdentityRole

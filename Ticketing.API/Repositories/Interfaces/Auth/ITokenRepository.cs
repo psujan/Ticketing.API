@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Ticketing.API.Model.Domain;
 
 namespace Ticketing.API.Repositories.Interfaces.Auth
 {
     public interface ITokenRepository
     {
-        string CreateJWTToken(IdentityUser user, List<string> roles);
+        string CreateJWTToken(User user, List<string> roles);
     }
 }

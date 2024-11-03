@@ -52,7 +52,7 @@ namespace Ticketing.API.Repositories
 
             return new PaginatedModel<T>(data, totalCount , resultCount  , pageNumber , pageSize);
         }*/
-        public async virtual Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int pageSize)
+        public async virtual Task<PaginatedModel<T>> GetPaginatedData(int pageNumber = 1, int pageSize = 1  )
         {
             IQueryable<T> query = dbContext.Set<T>();
            

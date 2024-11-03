@@ -12,6 +12,8 @@ namespace Ticketing.API.Data
         public DbSet<Model.Domain.TicketFile> TicketFile { get; set; }
 
         public DbSet<Model.Domain.File> File { get; set; }
+        public DbSet<Model.Domain.SolutionGuide> SolutionGuide { get; set; }
+
 
         public TicketingDbContext(DbContextOptions<TicketingDbContext> dbContextOptions):base(dbContextOptions)
         {
@@ -38,7 +40,18 @@ namespace Ticketing.API.Data
                 .HasForeignKey<TicketFile>(e => e.FileId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            
+            modelBuilder.Entity<SolutionGuide>()
+                .HasMany(e => e.Files)
+                .WithOne(t => t.SolutionGuide)
+                .HasForeignKey(e => e.ModelId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<SolutionGuide>()
+                .HasOne(sg => sg.User)
+                .WithMany() // or .WithMany(u => u.SolutionGuides) if you have a collection property
+                .HasForeignKey(sg => sg.UserId)
+                .HasPrincipalKey(u => u.Id);
+
         }
     }
 }

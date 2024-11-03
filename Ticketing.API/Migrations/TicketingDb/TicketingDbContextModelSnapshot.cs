@@ -22,58 +22,6 @@ namespace Ticketing.API.Migrations.TicketingDb
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUser", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UserName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("IdentityUser");
-                });
-
             modelBuilder.Entity("Ticketing.API.Model.Domain.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -117,6 +65,9 @@ namespace Ticketing.API.Migrations.TicketingDb
                     b.Property<string>("Model")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("ModelId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -135,7 +86,46 @@ namespace Ticketing.API.Migrations.TicketingDb
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ModelId");
+
                     b.ToTable("File");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Details")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SolutionGuide");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.Ticket", b =>
@@ -208,6 +198,79 @@ namespace Ticketing.API.Migrations.TicketingDb
                     b.ToTable("TicketFile");
                 });
 
+            modelBuilder.Entity("Ticketing.API.Model.Domain.User", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("User");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.File", b =>
+                {
+                    b.HasOne("Ticketing.API.Model.Domain.SolutionGuide", "SolutionGuide")
+                        .WithMany("Files")
+                        .HasForeignKey("ModelId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("SolutionGuide");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>
+                {
+                    b.HasOne("Ticketing.API.Model.Domain.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Ticketing.API.Model.Domain.Ticket", b =>
                 {
                     b.HasOne("Ticketing.API.Model.Domain.Category", "Category")
@@ -216,7 +279,7 @@ namespace Ticketing.API.Migrations.TicketingDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
+                    b.HasOne("Ticketing.API.Model.Domain.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");
 
@@ -246,8 +309,12 @@ namespace Ticketing.API.Migrations.TicketingDb
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.File", b =>
                 {
-                    b.Navigation("TicketFile")
-                        .IsRequired();
+                    b.Navigation("TicketFile");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>
+                {
+                    b.Navigation("Files");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.Ticket", b =>

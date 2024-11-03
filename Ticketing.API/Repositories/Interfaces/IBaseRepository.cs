@@ -9,6 +9,6 @@ namespace Ticketing.API.Repositories.Interfaces
 
         Task<T?> GetById(int id);
 
-        Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int pageSize);
+        Task<PaginatedModel<T>> GetPaginatedData(int pageNumber, int  pageSize);
     }
 }

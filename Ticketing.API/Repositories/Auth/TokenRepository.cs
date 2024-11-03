@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Ticketing.API.Model.Domain;
 using Ticketing.API.Repositories.Interfaces.Auth;
 
 namespace Ticketing.API.Repositories.Auth
@@ -11,14 +11,14 @@ namespace Ticketing.API.Repositories.Auth
     {
         private readonly IConfiguration configuration;
 
-        private static readonly int TokenExpiresIn = 60; // minutes
+        private static readonly int TokenExpiresIn = 180 ; // 3 hrs
 
         public TokenRepository(IConfiguration configuration)
         {
             this.configuration = configuration;
         }
 
-        public string CreateJWTToken(IdentityUser user, List<string> roles)
+        public string CreateJWTToken(User user, List<string> roles)
         {
 
             var claims = new List<Claim>();

@@ -89,6 +89,7 @@ namespace Ticketing.API.Repositories
             ticket.IssuerEmail = ticketRequestDto.IssuerEmail;
             ticket.IssuerPhone = ticketRequestDto.IssuerPhone;
             ticket.UserId = ticketRequestDto.UserId;
+            ticket.UpdatedAt = DateTime.Now;
             await dbContext.SaveChangesAsync();
 
 
@@ -102,7 +103,7 @@ namespace Ticketing.API.Repositories
                 return null;
             }
 
-            var fileList = await fileRepository.UploadFiles(files, Model , "Uploads/Tickets/");
+            var fileList = await fileRepository.UploadFiles(files, Model , "Uploads/Tickets/" , null);
             var ticketFiles = new List<TicketFile>();
             foreach (var file in fileList)
             {

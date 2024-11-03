@@ -3,6 +3,7 @@ using Ticketing.API.Model.Domain;
 using Ticketing.API.Repositories.Interfaces;
 using Ticketing.API.Services;
 using FileUploadModel = Ticketing.API.Model.UploadFile;
+using IFileRepository = Ticketing.API.Repositories.Interfaces.IFileRepository;
 
 namespace Ticketing.API.Repositories
 {
@@ -16,7 +17,7 @@ namespace Ticketing.API.Repositories
             this.uploadService = uploadService;
             this.dbContext = dbContext;
         }
-        public async Task<Model.Domain.File?> UploadFile(IFormFile file , string? model , string ? uploadDir)
+        public async Task<Model.Domain.File?> UploadFile(IFormFile file , string? model , string ? uploadDir , int ? modelId)
         {
             FileUploadModel? uploadedFile = await uploadService.UploadFile(file , model , uploadDir);
             if(uploadedFile == null)
@@ -31,7 +32,8 @@ namespace Ticketing.API.Repositories
                 MimeType =  uploadedFile.Extension,
                 Path = uploadedFile.Path,
                 Size = uploadedFile.ByteSize,
-                Model = model
+                Model = model,
+                ModelId = modelId
             };
 
             dbContext.File.Add(fileRow);
@@ -40,7 +42,7 @@ namespace Ticketing.API.Repositories
         }
 
        
-        public async Task<IEnumerable<Model.Domain.File>> UploadFiles(List<IFormFile> filesToBeUploaded , string? model, string? uploadDir)
+        public async Task<IEnumerable<Model.Domain.File>> UploadFiles(List<IFormFile> filesToBeUploaded , string? model, string? uploadDir , int? modelId)
         {
             if(filesToBeUploaded == null)
             {
@@ -50,8 +52,11 @@ namespace Ticketing.API.Repositories
             var fileList = new List<Model.Domain.File>();
             foreach (var file in filesToBeUploaded)
             {
-                var result = await UploadFile(file , model , uploadDir);
-                fileList.Add(result);
+                var result = await UploadFile(file , model , uploadDir , modelId);
+                if(result != null)
+                {
+                    fileList.Add(result);
+                }
             }
 
             return fileList;

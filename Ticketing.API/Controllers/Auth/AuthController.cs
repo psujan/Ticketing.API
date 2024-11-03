@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Ticketing.API.Model;
+using Ticketing.API.Model.Domain;
 using Ticketing.API.Model.Dto;
 using Ticketing.API.Repositories.Auth;
 using Ticketing.API.Repositories.Interfaces.Auth;
@@ -18,26 +20,29 @@ namespace Ticketing.API.Controllers.Auth
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> userManager;
+        private readonly UserManager<User> userManager;
         private readonly IUserManagerRepository userManagerRepository;
         private readonly ITokenRepository tokenRepository;
+        private readonly IMapper mapper;
 
-        public AuthController(UserManager<IdentityUser> userManager , 
+        public AuthController(UserManager<User> userManager , 
             IUserManagerRepository userManagerRepository , 
-            ITokenRepository tokenRepository 
+            ITokenRepository tokenRepository ,
+            IMapper mapper
         )
         {
             this.userManager = userManager;
             this.userManagerRepository = userManagerRepository;
             this.tokenRepository = tokenRepository;
+            this.mapper = mapper;
         }
 
         [HttpPost]
         [Route("register")]
         public async Task<IActionResult> Register([FromBody]RegisterRequest registerRequest)
         {
-            var identityUser = await userManagerRepository.RegisterUser(registerRequest);
-            if (identityUser == null) 
+            var user = await userManagerRepository.RegisterUser(registerRequest);
+            if (user == null) 
             {
                 return BadRequest(new ApiResponse<string>()
                 {
@@ -47,11 +52,11 @@ namespace Ticketing.API.Controllers.Auth
                 });
             }
 
-            return Ok(new ApiResponse<IdentityUser?>()
+            return Ok(new ApiResponse<User?>()
             {
                 Success = true,
                 Message = "User Registered Successfully",
-                Data = identityUser
+                Data = user
             });
         }
 
@@ -62,11 +67,11 @@ namespace Ticketing.API.Controllers.Auth
             var user = await userManagerRepository.GetUserByUserName(loginRequest.UserName);
             if (user == null)
             {
-                return BadRequest(new ApiResponse<string>()
+                return BadRequest(new ApiResponse<User?>()
                 {
                     Success = false,
                     Message = "No user found with given email",
-                    Data = ""
+                    Data = user
                 });
             }
 
@@ -100,11 +105,12 @@ namespace Ticketing.API.Controllers.Auth
 
             var jwtToken = tokenRepository.CreateJWTToken(user, roles.ToList());
 
+            var mappedUser = mapper.Map<UserResponseDto>(user);
             return Ok(new ApiResponse<object>()
             {
                 Success = true,
                 Message = "Login Sucessful",
-                Data = new { Token =  jwtToken , Roles = roles }
+                Data = new { Token =  jwtToken , Roles = roles , User = mappedUser }
             });
 
         }

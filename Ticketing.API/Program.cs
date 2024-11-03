@@ -4,6 +4,7 @@ using Ticketing.API.Services;
 using DotNetEnv;
 using Ticketing.API.Data.Seeder;
 using System.Text.Json.Serialization;
+using Ticketing.API.MapperProfiles;
 
 var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
@@ -38,6 +39,7 @@ builder.Services.AddDbContext<TicketingAuthDbContext>(options => options.UseSqlS
 
 //add app services
 builder.Services.RegisterService(builder);
+builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 

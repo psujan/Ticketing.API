@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
+using Ticketing.API.Model.Domain;
 
 namespace Ticketing.API.Data.Seeder
 {
@@ -15,7 +16,7 @@ namespace Ticketing.API.Data.Seeder
         public static async Task SeedUser(IServiceProvider serviceProvider)
         {
 
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
             string userName = "super.admin@gmail.com";
@@ -31,7 +32,7 @@ namespace Ticketing.API.Data.Seeder
             // Check if the user already exists
             if (await userManager.FindByEmailAsync(userName) == null)
             {
-                var user = new IdentityUser { UserName = userName, Email = userName, EmailConfirmed = true };
+                var user = new User { UserName = userName, Email = userName, EmailConfirmed = true };
                 var result = await userManager.CreateAsync(user, password);
 
                 // Assign the user to a role (optional)

@@ -2,7 +2,7 @@
 
 namespace Ticketing.API.Services
 {
-    public class FileUploadService :IFileUploadService
+    public class FileUploadService : IFileUploadService
     {
         public readonly static string Default_Upload_Dir = "Uploads";
 

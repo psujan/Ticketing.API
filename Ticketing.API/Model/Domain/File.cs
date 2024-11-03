@@ -14,7 +14,11 @@
 
         public string? Model { get; set; }
 
+        public int? ModelId { get; set; }
+
         // Navigation property to TicketFile
-        public TicketFile TicketFile { get; set; }
+        public TicketFile? TicketFile { get; set; }
+
+        public SolutionGuide? SolutionGuide { get; set; }
     }
 }
