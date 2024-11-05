@@ -1,4 +1,6 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Ticketing.API.Model.Domain
 {
     public class SolutionGuide :Base<int>
@@ -9,6 +11,7 @@ namespace Ticketing.API.Model.Domain
 
         public string Status { get; set; }
 
+        [ForeignKey("User")]
         public string UserId { get; set; } // Added By
 
         //Navigational Properties

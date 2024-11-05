@@ -6,7 +6,7 @@ using Ticketing.API.Model.Domain;
 
 namespace Ticketing.API.Data
 {
-    public class TicketingAuthDbContext : IdentityDbContext
+    public class TicketingAuthDbContext : IdentityDbContext<User>
     {
         public DbSet<User> User { get; set; }
         

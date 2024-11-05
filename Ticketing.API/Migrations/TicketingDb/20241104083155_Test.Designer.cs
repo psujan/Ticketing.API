@@ -12,8 +12,8 @@ using Ticketing.API.Data;
 namespace Ticketing.API.Migrations.TicketingDb
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241103104728_DB")]
-    partial class DB
+    [Migration("20241104083155_Test")]
+    partial class Test
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
