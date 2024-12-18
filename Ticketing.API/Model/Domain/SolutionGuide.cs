@@ -11,13 +11,14 @@ namespace Ticketing.API.Model.Domain
 
         public string Status { get; set; }
 
-        [ForeignKey("User")]
+       
         public string UserId { get; set; } // Added By
 
         //Navigational Properties
 
-        public User User { get; set; }
-
         public ICollection<File>? Files { get; set; }
+
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
     }
 }

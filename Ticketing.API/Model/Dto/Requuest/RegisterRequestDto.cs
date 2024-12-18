@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Ticketing.API.Model.Dto
+namespace Ticketing.API.Model.Dto.Requuest
 {
     public class RegisterRequestDto
     {

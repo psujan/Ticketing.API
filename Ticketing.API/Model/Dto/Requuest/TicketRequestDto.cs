@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Ticketing.API.Validations;
 using Ticketing.API.Validations.Files;
 
-namespace Ticketing.API.Model.Dto
+namespace Ticketing.API.Model.Dto.Requuest
 {
     public class TicketRequestDto
     {
@@ -27,8 +27,8 @@ namespace Ticketing.API.Model.Dto
 
         public string? IssuerPhone { get; set; }
 
-        [MaxFileSize (2 * 1024 *1024)]
-        [MaxFileCount (3)]
+        [MaxFileSize(2 * 1024 * 1024)]
+        [MaxFileCount(3)]
         [AllowedMimeType]
         public List<IFormFile>? Files { get; set; }
     }

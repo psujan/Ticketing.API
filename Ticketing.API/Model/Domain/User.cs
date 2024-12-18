@@ -10,8 +10,12 @@ namespace Ticketing.API.Model.Domain
 
         public string? Address;
 
+        public Boolean Status { get; set; } = true;
+
         // IdentityUser already includes Id property
         public virtual ICollection<SolutionGuide> SolutionGuide { get; set; }
+
+        public virtual ICollection<TicketDiscussion> TicketDiscussion { get; set; }
 
     }
 }

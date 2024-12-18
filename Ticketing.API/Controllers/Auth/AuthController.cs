@@ -11,8 +11,8 @@ using Ticketing.API.Model.Dto;
 using Ticketing.API.Repositories.Auth;
 using Ticketing.API.Repositories.Interfaces.Auth;
 using Ticketing.API.Services;
-using LoginRequest = Ticketing.API.Model.Dto.LoginRequestDto;
-using RegisterRequest = Ticketing.API.Model.Dto.RegisterRequestDto;
+using LoginRequest = Ticketing.API.Model.Dto.Requuest.LoginRequestDto;
+using RegisterRequest = Ticketing.API.Model.Dto.Requuest.RegisterRequestDto;
 
 namespace Ticketing.API.Controllers.Auth
 {

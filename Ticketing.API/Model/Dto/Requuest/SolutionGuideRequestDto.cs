@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Ticketing.API.Validations.Files;
 
-namespace Ticketing.API.Model.Dto
+namespace Ticketing.API.Model.Dto.Requuest
 {
     public class SolutionGuideRequestDto
     {
@@ -15,7 +15,7 @@ namespace Ticketing.API.Model.Dto
         public string Status { get; set; }
 
         [Required]
-        public string UserId { get; set; } // Added By
+        public string UserName { get; set; } // Added By
 
         [MaxFileSize(5 * 1024 * 1024)]
         [MaxFileCount(3)]

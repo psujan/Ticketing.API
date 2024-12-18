@@ -34,7 +34,6 @@ builder.Services.AddSwaggerGen();
 
 //add db context
 builder.Services.AddDbContext<TicketingDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TicketingConnectionString")));
-builder.Services.AddDbContext<TicketingAuthDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("TicketingConnectionString")));
 
 
 //add app services
@@ -59,7 +58,7 @@ if (args.Contains("seed"))
         var services = scope.ServiceProvider;
 
         //seed user first
-        var userContext = services.GetRequiredService<TicketingAuthDbContext>();
+        var userContext = services.GetRequiredService<TicketingDbContext>();
         userContext.Database.Migrate();
         await UserDbSeed.Initialize(services);
 

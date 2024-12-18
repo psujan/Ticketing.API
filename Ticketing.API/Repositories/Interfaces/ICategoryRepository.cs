@@ -10,5 +10,7 @@ namespace Ticketing.API.Repositories.Interfaces
         Task<Category?> Update(int id , CategoryRequestDto categoryRequest);
 
         Task<Category?> Delete(int id);
+
+        Task<IEnumerable<Category>> GetList(string? status);
     }
 }

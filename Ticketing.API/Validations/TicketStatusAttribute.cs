@@ -6,7 +6,7 @@ namespace Ticketing.API.Validations
     {
         public override bool IsValid(object? value)
         {
-            string[] validStatus = ["Opened", "InProgress", "Reopened", "Resolved", "Terminated"];
+            string[] validStatus = ["Active", "InProgress", "Reopened", "Resolved", "Terminated"];
 
             if (validStatus.Contains(value))
             {

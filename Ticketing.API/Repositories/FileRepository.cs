@@ -33,7 +33,9 @@ namespace Ticketing.API.Repositories
                 Path = uploadedFile.Path,
                 Size = uploadedFile.ByteSize,
                 Model = model,
-                ModelId = modelId
+                ModelId = modelId,
+                CreatedAt = DateTime.Now,
+                UpdatedAt   = DateTime.Now,
             };
 
             dbContext.File.Add(fileRow);

@@ -5,7 +5,7 @@ namespace Ticketing.API.Model.Domain
     public class Ticket :Base<int>
     {
         public string?  Title { get; set; }
-        public string Status { get; set; }
+        public string Status { get; set; } // Active ,  InProgress , Resolved ,  Recreated , 
 
         public string Details { get; set; }
         
@@ -20,6 +20,8 @@ namespace Ticketing.API.Model.Domain
         public Category Category { get; set; }
 
         public ICollection<TicketFile>? TicketFiles { get; set; }
+
+        public ICollection<TicketDiscussion>? TicketDiscussions { get; set; }
 
     }
 }

@@ -2,7 +2,7 @@
 {
     public class UserResponseDto
     {
-        public Guid id { get; set; }
+        public string Id { get; set; }
 
         public string UserName { get; set; }
 

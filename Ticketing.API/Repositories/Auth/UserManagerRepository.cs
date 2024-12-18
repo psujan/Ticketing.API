@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Ticketing.API.Model.Domain;
-using Ticketing.API.Model.Dto;
+using Ticketing.API.Model.Dto.Requuest;
 using Ticketing.API.Repositories.Interfaces.Auth;
 
 namespace Ticketing.API.Repositories.Auth

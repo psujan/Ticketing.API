@@ -1,5 +1,5 @@
 ﻿using Ticketing.API.Model.Domain;
-using Ticketing.API.Model.Dto;
+using Ticketing.API.Model.Dto.Requuest;
 
 namespace Ticketing.API.Repositories.Interfaces
 {
@@ -8,5 +8,6 @@ namespace Ticketing.API.Repositories.Interfaces
         Task<Ticket> Create(TicketRequestDto ticketRequestDto);
         Task<Ticket ?> Update(int id, TicketRequestDto ticketRequestDto);
         Task<Ticket?> Delete(int id);
+        Task<Ticket?> UpdateStatus(int id, string status);
     }
 }

@@ -20,6 +20,8 @@ namespace Ticketing.API.Data.Seeder
             }
 
             
+
+            
         }
 
         public static void SeedCategory(TicketingDbContext dbContext) {

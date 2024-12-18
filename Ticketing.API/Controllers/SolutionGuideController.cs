@@ -8,6 +8,7 @@ using Ticketing.API.Model.Dto;
 using System.Net;
 using Ticketing.API.Repositories;
 using Ticketing.API.Validations;
+using Ticketing.API.Model.Dto.Requuest;
 
 namespace Ticketing.API.Controllers
 {
@@ -28,7 +29,7 @@ namespace Ticketing.API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1 , int  pageSize = 10)
         {
             var data = await solutionGuideRepository.GetPaginatedData(pageNumber, pageSize);
-            return Ok(new ApiResponse<PaginatedModel<SolutionGuide>>()
+            return Ok(new ApiResponse<PaginatedModel<SolutionGuideResponseDto>>()
             {
                 Success = true,
                 Message = "Data Fetched Successfully",
@@ -42,7 +43,7 @@ namespace Ticketing.API.Controllers
         public async Task<IActionResult> Create(SolutionGuideRequestDto request)
         {
             var data = await solutionGuideRepository.Create(request);
-            return Ok(new ApiResponse<SolutionGuide>()
+            return Ok(new ApiResponse<SolutionGuideResponseDto>()
             {
                 Success = true,
                 Message = "Solution Guide Created Successfully",
@@ -72,7 +73,47 @@ namespace Ticketing.API.Controllers
             }*/
         }
 
+        //[Authorize]
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> GetById([FromRoute]int id)
+        {
+            var data = await solutionGuideRepository.GetById(id);
+            return Ok(new ApiResponse<SolutionGuideResponseDto>()
+            {
+                Success = true,
+                Data = data,
+                Message = "Solution Guide Fetched Successfully"
+            });
+        }
 
-
+        [HttpDelete]
+        [Authorize(Roles = "SuperAdmin")]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            try
+            {
+                var data = await solutionGuideRepository.Delete(id);
+                return Ok(new ApiResponse<SolutionGuideResponseDto>()
+                {
+                    Success = data != null ? true : false,
+                    Message = data != null ? "Solution Guide Deleted Successfully" : "Solution Guide Not Found",
+                    Data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
     }
 }

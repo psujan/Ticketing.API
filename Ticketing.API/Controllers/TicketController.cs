@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Ticketing.API.Model.Domain;
 using Ticketing.API.Model;
-using Ticketing.API.Model.Dto;
 using Ticketing.API.Repositories;
 using Ticketing.API.Repositories.Interfaces;
 using System.Net;
 using Ticketing.API.Validations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using Ticketing.API.Model.Dto.Requuest;
 
 namespace Ticketing.API.Controllers
 {
@@ -142,6 +142,36 @@ namespace Ticketing.API.Controllers
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
             }
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "SuperAdmin , Moderator")]
+        [Route("{id}/update-status")]
+        public async Task<IActionResult> UpdateStatus([FromRoute] int id , [FromBody] TicektStatusRequestDto statusRequest)
+        {
+            try
+            {
+                var ticket = await ticketRepository.UpdateStatus(id , statusRequest.status);
+                return Ok(new ApiResponse<Ticket>()
+                {
+                    Success = ticket != null ? true : false,
+                    Message = ticket != null ? "Ticket Status Updated Successfully" : "Ticket Not Found",
+                    Data = ticket
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+
         }
     }
 }

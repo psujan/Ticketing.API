@@ -37,6 +37,20 @@ namespace Ticketing.API.Controllers
             });
         }
 
+        [Authorize]
+        [HttpGet]
+        [Route("list")] // For dropdown
+        public async Task<IActionResult> GetCategoryList([FromQuery] string status = "active")
+        {
+            var data = await categoryRepository.GetList(status);
+            return Ok(new ApiResponse<IEnumerable<Category>>()
+            {
+                Success = true,
+                Message = "List Fetched Successfully",
+                Data = data
+            });
+        }
+
         [Authorize(Roles = "SuperAdmin")]
         [HttpPost]
         [ValidateModel]

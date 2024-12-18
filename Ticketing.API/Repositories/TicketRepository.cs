@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using Ticketing.API.Data;
 using Ticketing.API.Model;
 using Ticketing.API.Model.Domain;
-using Ticketing.API.Model.Dto;
+using Ticketing.API.Model.Dto.Requuest;
 using Ticketing.API.Repositories.Interfaces;
 
 namespace Ticketing.API.Repositories
@@ -51,6 +51,8 @@ namespace Ticketing.API.Repositories
                 Title = ticketRequestDto.Title,
                 Details = ticketRequestDto.Details,
                 Status  = ticketRequestDto.Status,
+                IssuerEmail = ticketRequestDto.IssuerEmail,
+                IssuerPhone = ticketRequestDto.IssuerPhone,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
                 UserId = ticketRequestDto.UserId,
@@ -94,6 +96,19 @@ namespace Ticketing.API.Repositories
 
 
             return ticket;
+        }
+
+        public async Task<Ticket?> UpdateStatus(int id , string status)
+        {
+            var ticket = await dbContext.Ticket.FindAsync(id);
+            if (ticket == null)
+            {
+                return null;
+            }
+            ticket.Status = status;
+            await dbContext.SaveChangesAsync();
+            return ticket;
+
         }
 
         public async Task<List<TicketFile>?> UploadTicketFiles(int TicketId , string Model="Ticket" , List<IFormFile> files = null)

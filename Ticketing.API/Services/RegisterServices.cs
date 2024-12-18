@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Runtime.CompilerServices;
 using System.Text;
 using Ticketing.API.Data;
+using Ticketing.API.MapperProfiles;
 using Ticketing.API.Model.Domain;
 using Ticketing.API.Repositories;
 using Ticketing.API.Repositories.Auth;
@@ -22,7 +23,7 @@ namespace Ticketing.API.Services
             services.AddIdentity<User , IdentityRole>()
                     .AddRoles<IdentityRole>()
                     .AddTokenProvider<DataProtectorTokenProvider<User>>("Ticketing")
-                    .AddEntityFrameworkStores<TicketingAuthDbContext>()
+                    .AddEntityFrameworkStores<TicketingDbContext>()
                     .AddDefaultTokenProviders();
 
             services.Configure<IdentityOptions>(options =>
@@ -60,6 +61,7 @@ namespace Ticketing.API.Services
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileUploadService, FileUploadService>();
             services.AddScoped<ISolutionGuideRepository , SolutionGuideRepository>();
+            services.AddScoped<ITicketDiscussionRepository, TicketDiscussionRepository>();
 
 
             return services;

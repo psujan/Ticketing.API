@@ -1,4 +1,5 @@
-﻿using Ticketing.API.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticketing.API.Data;
 using Ticketing.API.Model;
 using Ticketing.API.Model.Domain;
 using Ticketing.API.Model.Dto.Category;
@@ -13,6 +14,12 @@ namespace Ticketing.API.Repositories
         public CategoryRepository(TicketingDbContext dbContext):base(dbContext)
         {
             this.dbContext = dbContext;
+        }
+
+        public async Task<IEnumerable<Category>> GetList(string? status)
+        {
+            var data = await dbContext.Category.Where(c => c.Status == (status == "active" ? true: false)).ToListAsync();
+            return data;
         }
 
 
