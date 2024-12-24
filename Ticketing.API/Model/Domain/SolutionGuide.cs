@@ -16,7 +16,7 @@ namespace Ticketing.API.Model.Domain
 
         //Navigational Properties
 
-        public ICollection<File>? Files { get; set; }
+        public ICollection<SolutionGuideFile>? SolutionGuideFiles { get; set; }
 
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

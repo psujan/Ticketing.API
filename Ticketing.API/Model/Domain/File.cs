@@ -12,13 +12,13 @@
 
         public string? Path { get; set; }
 
-        public string? Model { get; set; }
+        public string Model { get; set; }
 
-        public int? ModelId { get; set; }
+        public int ModelId { get; set; }    
 
         // Navigation property to TicketFile
-        public TicketFile? TicketFile { get; set; }
+        public TicketFile TicketFile { get; set; }
+        public SolutionGuideFile SolutionGuideFile { get; set; }
 
-        public SolutionGuide? SolutionGuide { get; set; }
     }
 }

@@ -86,49 +86,6 @@ namespace Ticketing.API.Data.Seeder
             );
 
             dbContext.SaveChanges();
-
-            //Along with ticket seed TicketFile
-            dbContext.File.AddRange
-            (
-                new Model.Domain.File
-                {
-                   // Id = 1,
-                    Name = "Test File",
-                    Model = "Ticket",
-                    CreatedAt   = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                    Path = "https://file-examples.com/storage/fee7a7e285671bd4a9d4d9d/2017/10/file_example_JPG_100kB.jpg"
-                },
-                new Model.Domain.File
-                {
-                    //Id = 2,
-                    Name = "Test File 2",
-                    Model = "Ticket",
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                    Path = "https://file-examples.com/storage/fee7a7e285671bd4a9d4d9d/2017/10/file_example_JPG_100kB.jpg"
-                }
-            );
-
-            dbContext.SaveChanges();
-
-            dbContext.TicketFile.AddRange
-            (
-                new Model.Domain.TicketFile
-                {
-                   // Id = 1,
-                    TicketId = 1,
-                    FileId = 1,
-                },
-                new Model.Domain.TicketFile
-                {
-                    // Id = 2,
-                     TicketId = 2,
-                     FileId = 2,
-                }
-            );
-
-            dbContext.SaveChanges();
         }
     }
 }

@@ -12,8 +12,8 @@ using Ticketing.API.Data;
 namespace Ticketing.API.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241108101223_Initial Migration")]
-    partial class InitialMigration
+    [Migration("20241223080038_AddColumnsToFile")]
+    partial class AddColumnsToFile
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,9 +229,10 @@ namespace Ticketing.API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Model")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ModelId")
+                    b.Property<int>("ModelId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -252,9 +253,7 @@ namespace Ticketing.API.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ModelId");
-
-                    b.ToTable("File");
+                    b.ToTable("Files");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>
@@ -292,6 +291,28 @@ namespace Ticketing.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("SolutionGuide");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuideFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("FileId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SolutionGuideId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SolutionGuideId")
+                        .IsUnique();
+
+                    b.ToTable("SolutionGuideFile");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.Ticket", b =>
@@ -338,6 +359,43 @@ namespace Ticketing.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Ticket");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.TicketDiscussion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TicketDiscussion");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.TicketFile", b =>
@@ -483,16 +541,6 @@ namespace Ticketing.API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Ticketing.API.Model.Domain.File", b =>
-                {
-                    b.HasOne("Ticketing.API.Model.Domain.SolutionGuide", "SolutionGuide")
-                        .WithMany("Files")
-                        .HasForeignKey("ModelId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.Navigation("SolutionGuide");
-                });
-
             modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>
                 {
                     b.HasOne("Ticketing.API.Model.Domain.User", "User")
@@ -502,6 +550,25 @@ namespace Ticketing.API.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuideFile", b =>
+                {
+                    b.HasOne("Ticketing.API.Model.Domain.File", "File")
+                        .WithOne("SolutionGuideFile")
+                        .HasForeignKey("Ticketing.API.Model.Domain.SolutionGuideFile", "SolutionGuideId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ticketing.API.Model.Domain.SolutionGuide", "SolutionGuide")
+                        .WithMany("SolutionGuideFiles")
+                        .HasForeignKey("SolutionGuideId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("File");
+
+                    b.Navigation("SolutionGuide");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.Ticket", b =>
@@ -517,6 +584,25 @@ namespace Ticketing.API.Migrations
                         .HasForeignKey("UserId");
 
                     b.Navigation("Category");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Ticketing.API.Model.Domain.TicketDiscussion", b =>
+                {
+                    b.HasOne("Ticketing.API.Model.Domain.Ticket", "Ticket")
+                        .WithMany("TicketDiscussions")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ticketing.API.Model.Domain.User", "User")
+                        .WithMany("TicketDiscussion")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Ticket");
 
                     b.Navigation("User");
                 });
@@ -542,22 +628,30 @@ namespace Ticketing.API.Migrations
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.File", b =>
                 {
-                    b.Navigation("TicketFile");
+                    b.Navigation("SolutionGuideFile")
+                        .IsRequired();
+
+                    b.Navigation("TicketFile")
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>
                 {
-                    b.Navigation("Files");
+                    b.Navigation("SolutionGuideFiles");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.Ticket", b =>
                 {
+                    b.Navigation("TicketDiscussions");
+
                     b.Navigation("TicketFiles");
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.User", b =>
                 {
                     b.Navigation("SolutionGuide");
+
+                    b.Navigation("TicketDiscussion");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ValueGeneration;
 using Ticketing.API.Model.Domain;
 
 namespace Ticketing.API.Data
@@ -13,7 +14,7 @@ namespace Ticketing.API.Data
         public DbSet<Ticket> Ticket { get; set; }
         public DbSet<Model.Domain.TicketFile> TicketFile { get; set; }
 
-        public DbSet<Model.Domain.File> File { get; set; }
+        public DbSet<Model.Domain.File> Files { get; set; }
         public DbSet<Model.Domain.SolutionGuide> SolutionGuide { get; set; }
 
 
@@ -44,11 +45,17 @@ namespace Ticketing.API.Data
                 .HasForeignKey<TicketFile>(e => e.FileId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<SolutionGuide>()
-                .HasMany(e => e.Files)
-                .WithOne(t => t.SolutionGuide)
-                .HasForeignKey(e => e.ModelId)
-                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<SolutionGuideFile>()
+                .HasOne(e => e.SolutionGuide)
+                .WithMany(t => t.SolutionGuideFiles)
+                .HasForeignKey(t => t.SolutionGuideId)
+                .IsRequired(true);
+
+            modelBuilder.Entity<SolutionGuideFile>()
+               .HasOne(e => e.File)
+               .WithOne(t => t.SolutionGuideFile)
+               .HasForeignKey<SolutionGuideFile>(t => t.SolutionGuideId)
+               .IsRequired(true);
 
             modelBuilder.Entity<TicketDiscussion>()
                 .HasOne(e => e.Ticket)
@@ -61,10 +68,7 @@ namespace Ticketing.API.Data
                 .HasForeignKey(e => e.UserId);
                 
 
-            /*modelBuilder.Entity<SolutionGuide>()
-                .HasOne(sg => sg.User)
-                .WithMany() // or .WithMany(u => u.SolutionGuides) if you have a collection property
-                .HasForeignKey(sg => sg.UserId);*/
+           
                 
 
             // Seed Role Data

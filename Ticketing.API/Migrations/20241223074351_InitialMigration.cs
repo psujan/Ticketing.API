@@ -70,6 +70,25 @@ namespace Ticketing.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Files",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OriginalName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Size = table.Column<double>(type: "float", nullable: true),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Files", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -232,28 +251,57 @@ namespace Ticketing.API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "File",
+                name: "SolutionGuideFile",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OriginalName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Size = table.Column<double>(type: "float", nullable: true),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Model = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ModelId = table.Column<int>(type: "int", nullable: true),
+                    SolutionGuideId = table.Column<int>(type: "int", nullable: false),
+                    FileId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SolutionGuideFile", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SolutionGuideFile_Files_SolutionGuideId",
+                        column: x => x.SolutionGuideId,
+                        principalTable: "Files",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_SolutionGuideFile_SolutionGuide_SolutionGuideId",
+                        column: x => x.SolutionGuideId,
+                        principalTable: "SolutionGuide",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TicketDiscussion",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Comment = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    TicketId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_File", x => x.Id);
+                    table.PrimaryKey("PK_TicketDiscussion", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_File_SolutionGuide_ModelId",
-                        column: x => x.ModelId,
-                        principalTable: "SolutionGuide",
+                        name: "FK_TicketDiscussion_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_TicketDiscussion_Ticket_TicketId",
+                        column: x => x.TicketId,
+                        principalTable: "Ticket",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -271,9 +319,9 @@ namespace Ticketing.API.Migrations
                 {
                     table.PrimaryKey("PK_TicketFile", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TicketFile_File_FileId",
+                        name: "FK_TicketFile_Files_FileId",
                         column: x => x.FileId,
-                        principalTable: "File",
+                        principalTable: "Files",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -335,14 +383,15 @@ namespace Ticketing.API.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_File_ModelId",
-                table: "File",
-                column: "ModelId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SolutionGuide_UserId",
                 table: "SolutionGuide",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SolutionGuideFile_SolutionGuideId",
+                table: "SolutionGuideFile",
+                column: "SolutionGuideId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_CategoryId",
@@ -352,6 +401,16 @@ namespace Ticketing.API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_UserId",
                 table: "Ticket",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketDiscussion_TicketId",
+                table: "TicketDiscussion",
+                column: "TicketId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TicketDiscussion_UserId",
+                table: "TicketDiscussion",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -385,25 +444,31 @@ namespace Ticketing.API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "SolutionGuideFile");
+
+            migrationBuilder.DropTable(
+                name: "TicketDiscussion");
+
+            migrationBuilder.DropTable(
                 name: "TicketFile");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "File");
+                name: "SolutionGuide");
+
+            migrationBuilder.DropTable(
+                name: "Files");
 
             migrationBuilder.DropTable(
                 name: "Ticket");
 
             migrationBuilder.DropTable(
-                name: "SolutionGuide");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "Category");
-
-            migrationBuilder.DropTable(
-                name: "AspNetUsers");
         }
     }
 }

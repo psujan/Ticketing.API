@@ -32,7 +32,6 @@ namespace Ticketing.API.Repositories
         public async  Task<PaginatedModel<SolutionGuideResponseDto>> GetPaginatedData(int pageNumber, int pageSize)
         {
             var rows = dbContext.SolutionGuide
-                        .Include(s => s.Files)
                         .Include(s => s.User)
                         .Skip((pageNumber - 1) * pageSize)
                         .Take(pageSize)
@@ -59,7 +58,7 @@ namespace Ticketing.API.Repositories
             await dbContext.AddAsync(solutionGuide);
             await dbContext.SaveChangesAsync();
 
-            var fileList = await AddSolutionFiles(solutionGuide.Id, request.Files);
+           // var fileList = await AddSolutionFiles(solutionGuide.Id, request.Files);
 
             //Log Added FileList Somewhere For Future Reference
 
@@ -123,7 +122,7 @@ namespace Ticketing.API.Repositories
                 return null;
             }
 
-            var files = dbContext.File.Where(x => x.ModelId == id).ToList();
+            /*var files = dbContext.Files.Where(x => x.ModelId == id).ToList();
             if(files.Count > 0)
             {
                 foreach(var f in files)
@@ -143,8 +142,8 @@ namespace Ticketing.API.Repositories
                 
                 }
             }
-            dbContext.File.RemoveRange(files);
-            await dbContext.SaveChangesAsync();
+            dbContext.Files.RemoveRange(files);
+            await dbContext.SaveChangesAsync();*/
             // delete record from solution guide table
             dbContext.SolutionGuide.Remove(data);
             await dbContext.SaveChangesAsync();

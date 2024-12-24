@@ -52,7 +52,7 @@ namespace Ticketing.API.Controllers
             /*try
             {
                 var data = await solutionGuideRepository.Create(request);
-                return Ok(new ApiResponse<SolutionGuide>()
+                return Ok(new ApiResponse<SolutionGuideResponseDto>()
                 {
                     Success = true,
                     Message = "Solution Guide Created Successfully",

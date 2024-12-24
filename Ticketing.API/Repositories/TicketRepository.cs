@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using System.Linq.Expressions;
 using System.Net.Sockets;
 using Ticketing.API.Data;
@@ -38,7 +40,6 @@ namespace Ticketing.API.Repositories
             var data =  await dbContext.Ticket
                         .Include(ticket => ticket.Category)
                         .Include(ticket => ticket.TicketFiles)
-                        .ThenInclude(ticketFile => ticketFile.File)
                         .FirstOrDefaultAsync(x => x.Id == id);
             return data; 
         }
@@ -65,7 +66,7 @@ namespace Ticketing.API.Repositories
             //await UploadFiles();
             if(ticketRequestDto.Files != null)
             {
-                var ticketFiles = await UploadTicketFiles(ticket.Id, "Ticket" , ticketRequestDto.Files);
+                await UploadTicketFiles(ticket.Id, "Ticket" , ticketRequestDto.Files);
             }
             return ticket;
         }
@@ -111,14 +112,20 @@ namespace Ticketing.API.Repositories
 
         }
 
-        public async Task<List<TicketFile>?> UploadTicketFiles(int TicketId , string Model="Ticket" , List<IFormFile> files = null)
+        public async Task<IEnumerable<Model.Domain.File>?> UploadTicketFiles(int TicketId , string Model="Ticket" , List<IFormFile> files = null)
         {
             if(files == null)
             {
                 return null;
             }
 
-            var fileList = await fileRepository.UploadFiles(files, Model , "Uploads/Tickets/" , null);
+            var  fileList = await fileRepository.UploadFiles(files, "Ticket" , "Uploads/Tickets/" , TicketId);
+            await SaveTicketFiles(TicketId , fileList);
+            return fileList;
+        }
+
+        public async Task<IEnumerable<TicketFile>> SaveTicketFiles(int TicketId , IEnumerable<Model.Domain.File> fileList)
+        {
             var ticketFiles = new List<TicketFile>();
             foreach (var file in fileList)
             {
@@ -139,26 +146,25 @@ namespace Ticketing.API.Repositories
         public async Task<Ticket ?> Delete(int id)
         {
             var ticket = await dbContext.Ticket
-                        .Include(ticket => ticket.TicketFiles)
-                        .ThenInclude(ticketFile => ticketFile.File)
+                        //.Include(ticket => ticket.Files)
                         .FirstOrDefaultAsync(x => x.Id == id);
             if (ticket == null)
             {
                 return null;
             }
 
-            // Delete Files From Storage
-            if(ticket.TicketFiles !=  null && ticket.TicketFiles.Count > 0)
+            // Delete Uploaded Files From Storage and Database
+            /*if(ticket.Files !=  null && ticket.Files.Count > 0)
             {
-                foreach(var f in ticket.TicketFiles)
+                foreach(var f in ticket.Files)
                 {
-                    if(f.File != null)
+                    if(f != null)
                     {
-                        fileRepository.DeleteFile("Uploads/Tickets/" , f.File.Name);
+                        await fileRepository.DeleteFile("Uploads/Tickets/" , f.Name , "Ticket", (int)f.ModelId);
                     }
 
                 }
-            }
+            }*/
             dbContext.Ticket.Remove(ticket);
             await dbContext.SaveChangesAsync();
             return ticket;

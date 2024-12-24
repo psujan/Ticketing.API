@@ -4,9 +4,7 @@ namespace Ticketing.API.Model.Domain
 {
     public class User :IdentityUser
     {
-        public string? FirstName;
-
-        public string? LastName;
+        public string? FullName;
 
         public string? Address;
 

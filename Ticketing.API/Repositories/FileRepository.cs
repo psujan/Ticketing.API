@@ -1,4 +1,5 @@
-﻿using Ticketing.API.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using Ticketing.API.Data;
 using Ticketing.API.Model.Domain;
 using Ticketing.API.Repositories.Interfaces;
 using Ticketing.API.Services;
@@ -17,14 +18,14 @@ namespace Ticketing.API.Repositories
             this.uploadService = uploadService;
             this.dbContext = dbContext;
         }
-        public async Task<Model.Domain.File?> UploadFile(IFormFile file , string? model , string ? uploadDir , int ? modelId)
+        public async Task<Model.Domain.File?> UploadFile(IFormFile file , string model , string ? uploadDir , int  modelId)
         {
             FileUploadModel? uploadedFile = await uploadService.UploadFile(file , model , uploadDir);
             if(uploadedFile == null)
             {
                 return null;
             }
-
+            
             var fileRow = new Model.Domain.File()
             {
                 Name = uploadedFile.FileName,
@@ -38,13 +39,13 @@ namespace Ticketing.API.Repositories
                 UpdatedAt   = DateTime.Now,
             };
 
-            dbContext.File.Add(fileRow);
-            dbContext.SaveChanges();
+            await dbContext.Files.AddAsync(fileRow);
+            await dbContext.SaveChangesAsync();
             return fileRow;
         }
 
        
-        public async Task<IEnumerable<Model.Domain.File>> UploadFiles(List<IFormFile> filesToBeUploaded , string? model, string? uploadDir , int? modelId)
+        public async Task<IEnumerable<Model.Domain.File>> UploadFiles(List<IFormFile> filesToBeUploaded , string model, string? uploadDir , int modelId)
         {
             if(filesToBeUploaded == null)
             {
@@ -64,9 +65,26 @@ namespace Ticketing.API.Repositories
             return fileList;
         }
 
-        public void DeleteFile(string uploadDir , string fileName)
+        /*public void DeleteFile(string uploadDir , string fileName)
         {
             uploadService.DeleteFileIfExists(uploadDir , fileName);
+        }*/
+
+        public  async Task<bool> DeleteFile(string uploadDir , string fileName , string modelName , int modelId)
+        {
+           /*var data = await dbContext.Files.Where(x => x.Model == modelName && x.ModelId == modelId).FirstOrDefaultAsync();
+           if(data == null)
+            {
+                return false;
+            }
+
+            uploadService.DeleteFileIfExists(uploadDir, fileName);
+
+            dbContext.Files.Remove(data);
+            await dbContext.SaveChangesAsync();*/
+
+            return true;
+
         }
         
     }
