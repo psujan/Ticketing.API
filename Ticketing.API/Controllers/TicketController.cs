@@ -30,7 +30,7 @@ namespace Ticketing.API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] int pageNumber = 1, int pageSize = 10)
         {
             var data = await ticketRepository.GetPaginatedData(pageNumber , pageSize);
-            return Ok(new ApiResponse<PaginatedModel<Ticket>>()
+            return Ok(new ApiResponse<PaginatedModel<TicketResponseDto>>()
             {
                 Success = true,
                 Message = "Data Fetched Successfully",
@@ -61,7 +61,7 @@ namespace Ticketing.API.Controllers
         public async  Task<IActionResult> Create([FromForm]TicketRequestDto ticketRequest)
         {
             var ticket = await ticketRepository.Create(ticketRequest);
-            return Ok(new ApiResponse<Ticket>()
+            return Ok(new ApiResponse<TicketResponseDto>()
             {
                 Success = true,
                 Message = "Ticket Created Successfully",
@@ -102,7 +102,7 @@ namespace Ticketing.API.Controllers
             try
             {
                 var ticket = await ticketRepository.Update(id, ticketRequest);
-                return Ok(new ApiResponse<Ticket>()
+                return Ok(new ApiResponse<TicketResponseDto>()
                 {
                     Success = ticket != null ? true : false,
                     Message = ticket != null ? "Ticket Updated Successfully" : "Ticket Not Found",
@@ -131,7 +131,7 @@ namespace Ticketing.API.Controllers
             try
             {
                 var ticket = await ticketRepository.Delete(id);
-                return Ok(new ApiResponse<Ticket>()
+                return Ok(new ApiResponse<TicketResponseDto>()
                 {
                     Success = ticket != null ? true : false,
                     Message = ticket != null ? "Ticket Deleted Successfully" : "Ticket Not Found",
@@ -160,7 +160,7 @@ namespace Ticketing.API.Controllers
             try
             {
                 var ticket = await ticketRepository.UpdateStatus(id , statusRequest.status);
-                return Ok(new ApiResponse<Ticket>()
+                return Ok(new ApiResponse<TicketResponseDto>()
                 {
                     Success = ticket != null ? true : false,
                     Message = ticket != null ? "Ticket Status Updated Successfully" : "Ticket Not Found",

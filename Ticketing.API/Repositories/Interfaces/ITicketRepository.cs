@@ -1,15 +1,16 @@
 ﻿using Ticketing.API.Model.Domain;
 using Ticketing.API.Model.Dto;
 using Ticketing.API.Model.Dto.Requuest;
+using TicketResponseDto = Ticketing.API.Model.Dto.TicketResponseDto;
 
 namespace Ticketing.API.Repositories.Interfaces
 {
-    public interface ITicketRepository : IBaseRepository<Ticket> 
+    public interface ITicketRepository : IBaseRepository<TicketResponseDto> 
     {
-        Task<Ticket> Create(TicketRequestDto ticketRequestDto);
-        Task<Ticket ?> Update(int id, TicketRequestDto ticketRequestDto);
-        Task<Ticket?> Delete(int id);
-        Task<Ticket?> UpdateStatus(int id, string status);
+        Task<TicketResponseDto> Create(TicketRequestDto ticketRequestDto);
+        Task<TicketResponseDto?> Update(int id, TicketRequestDto ticketRequestDto);
+        Task<TicketResponseDto?> Delete(int id);
+        Task<TicketResponseDto?> UpdateStatus(int id, string status);
         new Task<TicketResponseDto> GetById(int id);
     }
 }

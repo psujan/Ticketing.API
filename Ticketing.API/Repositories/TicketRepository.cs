@@ -10,10 +10,13 @@ using Ticketing.API.Model.Domain;
 using Ticketing.API.Model.Dto;
 using Ticketing.API.Model.Dto.Requuest;
 using Ticketing.API.Repositories.Interfaces;
+using TicketResponseDto = Ticketing.API.Model.Dto.TicketResponseDto;
+using Ticket = Ticketing.API.Model.Domain.Ticket;
+
 
 namespace Ticketing.API.Repositories
 {
-    public class TicketRepository : BaseRepository<Ticket>, ITicketRepository
+    public class TicketRepository : BaseRepository<TicketResponseDto>, ITicketRepository
     {
         private readonly IFileRepository fileRepository;
         private readonly IMapper mapper;
@@ -24,7 +27,7 @@ namespace Ticketing.API.Repositories
             this.mapper = mapper;
         }
 
-        public async override Task<PaginatedModel<Ticket>> GetPaginatedData(int pageNumber, int pageSize)
+        public async override Task<PaginatedModel<TicketResponseDto>> GetPaginatedData(int pageNumber, int pageSize)
         {
             var rows = dbContext.Ticket
                         .Include(ticket => ticket.Category)
@@ -35,7 +38,8 @@ namespace Ticketing.API.Repositories
             var data = await rows.ToListAsync();
             var totalCount = await dbContext.Ticket.CountAsync();
             var resultCount = rows.Count();
-            return new PaginatedModel<Ticket>(data, totalCount, resultCount, pageNumber, pageSize);
+            var mappedData = mapper.Map<IEnumerable<TicketResponseDto>>(data);
+            return new PaginatedModel<TicketResponseDto>(mappedData, totalCount, resultCount, pageNumber, pageSize);
 
         }
 
@@ -49,7 +53,7 @@ namespace Ticketing.API.Repositories
             return mapper.Map<TicketResponseDto>(data); ; 
         }
 
-        public async Task<Ticket> Create(TicketRequestDto ticketRequestDto)
+        public async Task<TicketResponseDto> Create(TicketRequestDto ticketRequestDto)
         {
             var tFiles = ticketRequestDto.Files;
             Ticket ticket = new Ticket()
@@ -73,10 +77,10 @@ namespace Ticketing.API.Repositories
             {
                 await UploadTicketFiles(ticket.Id, "Ticket" , ticketRequestDto.Files);
             }
-            return ticket;
+            return mapper.Map<TicketResponseDto>(ticket);
         }
 
-        public async Task<Ticket?> Update(int id, TicketRequestDto ticketRequestDto)
+        public async Task<TicketResponseDto?> Update(int id, TicketRequestDto ticketRequestDto)
         {
             var ticket = await dbContext.Ticket.FindAsync(id);
             if (ticket == null)
@@ -101,10 +105,10 @@ namespace Ticketing.API.Repositories
             await dbContext.SaveChangesAsync();
 
 
-            return ticket;
+            return mapper.Map<TicketResponseDto>(ticket);
         }
 
-        public async Task<Ticket?> UpdateStatus(int id , string status)
+        public async Task<TicketResponseDto?> UpdateStatus(int id , string status)
         {
             var ticket = await dbContext.Ticket.FindAsync(id);
             if (ticket == null)
@@ -113,7 +117,7 @@ namespace Ticketing.API.Repositories
             }
             ticket.Status = status;
             await dbContext.SaveChangesAsync();
-            return ticket;
+            return mapper.Map<TicketResponseDto>(ticket);
 
         }
 
@@ -148,7 +152,7 @@ namespace Ticketing.API.Repositories
             return ticketFiles;
         }
 
-        public async Task<Ticket ?> Delete(int id)
+        public async Task<TicketResponseDto ?> Delete(int id)
         {
             var ticket = await dbContext.Ticket
                         //.Include(ticket => ticket.Files)
@@ -172,7 +176,7 @@ namespace Ticketing.API.Repositories
             }*/
             dbContext.Ticket.Remove(ticket);
             await dbContext.SaveChangesAsync();
-            return ticket;
+            return mapper.Map<TicketResponseDto>(ticket);
         }
     }
 }
