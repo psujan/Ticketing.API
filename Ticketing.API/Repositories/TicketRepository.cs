@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
 using System.Linq.Expressions;
@@ -6,6 +7,7 @@ using System.Net.Sockets;
 using Ticketing.API.Data;
 using Ticketing.API.Model;
 using Ticketing.API.Model.Domain;
+using Ticketing.API.Model.Dto;
 using Ticketing.API.Model.Dto.Requuest;
 using Ticketing.API.Repositories.Interfaces;
 
@@ -14,10 +16,12 @@ namespace Ticketing.API.Repositories
     public class TicketRepository : BaseRepository<Ticket>, ITicketRepository
     {
         private readonly IFileRepository fileRepository;
+        private readonly IMapper mapper;
 
-        public TicketRepository(TicketingDbContext dbContext , IFileRepository fileRepository) : base(dbContext)
+        public TicketRepository(TicketingDbContext dbContext , IFileRepository fileRepository , IMapper mapper) : base(dbContext)
         {
             this.fileRepository = fileRepository;
+            this.mapper = mapper;
         }
 
         public async override Task<PaginatedModel<Ticket>> GetPaginatedData(int pageNumber, int pageSize)
@@ -35,13 +39,14 @@ namespace Ticketing.API.Repositories
 
         }
 
-        public async override Task<Ticket?> GetById(int id)
+        public async new Task<TicketResponseDto> GetById(int id)
         {
             var data =  await dbContext.Ticket
                         .Include(ticket => ticket.Category)
                         .Include(ticket => ticket.TicketFiles)
+                        .ThenInclude(ticketFile => ticketFile.File)
                         .FirstOrDefaultAsync(x => x.Id == id);
-            return data; 
+            return mapper.Map<TicketResponseDto>(data); ; 
         }
 
         public async Task<Ticket> Create(TicketRequestDto ticketRequestDto)

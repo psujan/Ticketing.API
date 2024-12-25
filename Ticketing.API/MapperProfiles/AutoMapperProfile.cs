@@ -19,7 +19,10 @@ namespace Ticketing.API.MapperProfiles
                 Email = src.User.Email,
             }));
             // .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Files)); 
-            CreateMap<Ticket, TicketResponseDto>().ForMember(dest => dest.User , opt=> opt.MapFrom(src => src.User));
+            CreateMap<Ticket, TicketResponseDto>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.Files, 
+                    opt => opt.MapFrom(src => src.TicketFiles.Select(tf => tf.File)));
         }
     }
 }

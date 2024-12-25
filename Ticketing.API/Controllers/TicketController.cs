@@ -9,6 +9,7 @@ using System.Net;
 using Ticketing.API.Validations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Ticketing.API.Model.Dto.Requuest;
+using Ticketing.API.Model.Dto;
 
 namespace Ticketing.API.Controllers
 {
@@ -45,7 +46,7 @@ namespace Ticketing.API.Controllers
         public async Task<IActionResult> GetById([FromRoute] int id)
         {
             var data = await ticketRepository.GetById(id);
-            return Ok(new ApiResponse<Ticket?>()
+            return Ok(new ApiResponse<TicketResponseDto?>()
             {
                 Success = true,
                 Message = "Data Fetched Successfully",
