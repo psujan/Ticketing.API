@@ -155,7 +155,8 @@ namespace Ticketing.API.Repositories
         public async Task<TicketResponseDto ?> Delete(int id)
         {
             var ticket = await dbContext.Ticket
-                        //.Include(ticket => ticket.Files)
+                        .Include(ticket => ticket.TicketFiles)
+                        .ThenInclude(tf => tf.File)
                         .FirstOrDefaultAsync(x => x.Id == id);
             if (ticket == null)
             {
@@ -163,17 +164,21 @@ namespace Ticketing.API.Repositories
             }
 
             // Delete Uploaded Files From Storage and Database
-            /*if(ticket.Files !=  null && ticket.Files.Count > 0)
+            if(ticket.TicketFiles !=  null && ticket.TicketFiles.Count > 0)
             {
-                foreach(var f in ticket.Files)
+                foreach(var f in ticket.TicketFiles)
                 {
                     if(f != null)
                     {
-                        await fileRepository.DeleteFile("Uploads/Tickets/" , f.Name , "Ticket", (int)f.ModelId);
+                        await fileRepository.DeleteFile("Uploads/Tickets/" , f.File.Name , "Ticket", (int)f.File.ModelId);
                     }
 
                 }
-            }*/
+                dbContext.TicketFile.RemoveRange(ticket.TicketFiles);
+
+                //var filesInDb = await dbContext.Files.Where(rows => rows.ModelId == ticket.Id && rows.Model == "Ticket").ToListAsync();
+                //dbContext.Files.RemoveRange(filesInDb);
+            }
             dbContext.Ticket.Remove(ticket);
             await dbContext.SaveChangesAsync();
             return mapper.Map<TicketResponseDto>(ticket);

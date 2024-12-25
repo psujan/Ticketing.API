@@ -72,7 +72,7 @@ namespace Ticketing.API.Repositories
 
         public  async Task<bool> DeleteFile(string uploadDir , string fileName , string modelName , int modelId)
         {
-           /*var data = await dbContext.Files.Where(x => x.Model == modelName && x.ModelId == modelId).FirstOrDefaultAsync();
+           var data = await dbContext.Files.Where(x => x.Model == modelName && x.ModelId == modelId).FirstOrDefaultAsync();
            if(data == null)
             {
                 return false;
@@ -81,7 +81,7 @@ namespace Ticketing.API.Repositories
             uploadService.DeleteFileIfExists(uploadDir, fileName);
 
             dbContext.Files.Remove(data);
-            await dbContext.SaveChangesAsync();*/
+            await dbContext.SaveChangesAsync();
 
             return true;
 
