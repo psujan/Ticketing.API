@@ -10,6 +10,7 @@ using Ticketing.API.Validations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Ticketing.API.Model.Dto.Requuest;
 using Ticketing.API.Model.Dto;
+using System.Net.Sockets;
 
 namespace Ticketing.API.Controllers
 {
@@ -180,6 +181,35 @@ namespace Ticketing.API.Controllers
                 };
             }
 
+        }
+
+        [HttpDelete]
+        [Authorize(Roles = "SuperAdmin")]
+        [Route("delete/ticketfile/{id}")]
+        public async Task<IActionResult> DeleteTicketFile([FromRoute] int id)
+        {
+            try
+            {
+                var status = await ticketRepository.DeleteTicketFile(id);
+                return Ok(new ApiResponse<object?>()
+                {
+                    Success = status ,
+                    Message = status ? "File Deleted Successfully" : "Unable To Delete File",
+                    Data = null
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
         }
     }
 }

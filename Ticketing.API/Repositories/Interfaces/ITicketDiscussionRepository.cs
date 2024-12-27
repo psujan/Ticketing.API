@@ -13,5 +13,7 @@ namespace Ticketing.API.Repositories.Interfaces
         //Task<Category?> Delete(int id);
 
         Task<IEnumerable<TicketDiscussion>> GetAll(int ticketId);
+
+        
     }
 }

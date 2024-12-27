@@ -12,5 +12,7 @@ namespace Ticketing.API.Repositories.Interfaces
         Task<TicketResponseDto?> Delete(int id);
         Task<TicketResponseDto?> UpdateStatus(int id, string status);
         new Task<TicketResponseDto> GetById(int id);
+
+        Task<bool> DeleteTicketFile(int fileId);
     }
 }

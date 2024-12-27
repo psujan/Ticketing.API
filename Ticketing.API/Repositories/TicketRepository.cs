@@ -178,5 +178,18 @@ namespace Ticketing.API.Repositories
             await dbContext.SaveChangesAsync();
             return mapper.Map<TicketResponseDto>(ticket);
         }
+
+        public async Task<bool> DeleteTicketFile(int fileId)
+        {
+            var data = await dbContext.TicketFile.FindAsync(fileId);
+            if (data == null) {
+                return false;
+            }
+            fileService.DeleteFileIfExists(UploadDir, data.Name);
+
+            dbContext.TicketFile.Remove(data);
+            await dbContext.SaveChangesAsync();
+            return true;
+        }
     }
 }
