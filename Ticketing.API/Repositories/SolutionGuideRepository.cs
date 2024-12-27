@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
+using System.Net.Sockets;
 using Ticketing.API.Data;
 using Ticketing.API.Model;
 using Ticketing.API.Model.Domain;
@@ -16,14 +17,15 @@ namespace Ticketing.API.Repositories
 {
     public class SolutionGuideRepository : ISolutionGuideRepository
     {
-        private readonly IFileRepository fileRepository;
+        private readonly IFileUploadService fileService;
         private readonly IUserManagerRepository uRep;
         private readonly IMapper mapper;
         private TicketingDbContext dbContext;
+        private readonly static string UploadDir = "Uploads/SolutionGuide/";
 
-        public SolutionGuideRepository(TicketingDbContext dbContext , IFileRepository fileRepository , IUserManagerRepository uRep , IMapper mapper) 
+        public SolutionGuideRepository(TicketingDbContext dbContext ,IFileUploadService fileService , IUserManagerRepository uRep , IMapper mapper) 
         {
-            this.fileRepository = fileRepository;
+            this.fileService = fileService;
             this.uRep = uRep;
             this.mapper = mapper;
             this.dbContext = dbContext;
@@ -58,9 +60,8 @@ namespace Ticketing.API.Repositories
             await dbContext.AddAsync(solutionGuide);
             await dbContext.SaveChangesAsync();
 
-           // var fileList = await AddSolutionFiles(solutionGuide.Id, request.Files);
+            var fileList = await UploadSolutionGuideFiles(solutionGuide.Id, "SolutionGuide" , request.Files);
 
-            //Log Added FileList Somewhere For Future Reference
 
             //return solutionGuide;
             return mapper.Map<SolutionGuideResponseDto>(solutionGuide);
@@ -70,84 +71,72 @@ namespace Ticketing.API.Repositories
 
         public new  async Task<SolutionGuideResponseDto?> GetById(int id)
         {
-            var data = await dbContext.SolutionGuide.Include(s => s.User).FirstOrDefaultAsync(x => x.Id == id);
+            var data = await dbContext.SolutionGuide
+                .Include(s => s.User)
+                .Include(sg => sg.SolutionGuideFiles)
+                .FirstOrDefaultAsync(x => x.Id == id);
             var mappedData = mapper.Map<SolutionGuideResponseDto>(data);
             return mappedData;
         }
 
         
-        public async Task<SolutionGuide?> Delete(int id)
-        {
-            var solutionGuide =  await dbContext.FindAsync<SolutionGuide>(id);
-
-            if(solutionGuide == null)
-            {
-                return null;
-            }
-
-            dbContext.SolutionGuide.Remove(solutionGuide);
-            return solutionGuide;
-        }
-
-        
-
-        public Task<Ticket?> Update(int id, SolutionGuideRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<IEnumerable<Model.Domain.File>?> AddSolutionFiles(int solutionGuideId , List<IFormFile>? files ,  string? modelName = "SolutionGuide", string? uploadDir = "Uploads/Solutions/")
-        {
-            if(files == null || files.Count == 0)
-            {
-                return null;
-            }
-
-            var fileList =  await fileRepository.UploadFiles(files , modelName, uploadDir , solutionGuideId);
-            return fileList;
-
-        }
-
-       
-        Task<SolutionGuideResponseDto?> ISolutionGuideRepository.Update(int id, SolutionGuideRequestDto request)
-        {
-            throw new NotImplementedException();
-        }
-
+         
         async Task<SolutionGuideResponseDto?> ISolutionGuideRepository.Delete(int id)
         {
-            var data = await dbContext.SolutionGuide.FindAsync(id);
-            if(data == null)
+            var data = await dbContext.SolutionGuide.Include(sg => sg.SolutionGuideFiles)
+                        .FirstOrDefaultAsync(x => x.Id == id);
+            if (data == null)
             {
                 return null;
             }
 
-            /*var files = dbContext.Files.Where(x => x.ModelId == id).ToList();
-            if(files.Count > 0)
+            // Delete Uploaded Files From Uploads Directory
+            if (data.SolutionGuideFiles != null && data.SolutionGuideFiles.Count > 0)
             {
-                foreach(var f in files)
+                foreach (var file in data.SolutionGuideFiles)
                 {
-                    // delete file from uploads folder
-                    string? filePath = f.Path;
-                    string fullFilePath = Path.Combine(Directory.GetCurrentDirectory() , filePath);
-
-                    // Check if the file exists
-                    if (File.Exists(fullFilePath))
-                    {
-                        // Delete the file
-                        File.Delete(filePath);
-                    }
-
-                    // delete file record from file table
-                
+                    fileService.DeleteFileIfExists(UploadDir, file.Name);
                 }
             }
-            dbContext.Files.RemoveRange(files);
-            await dbContext.SaveChangesAsync();*/
-            // delete record from solution guide table
             dbContext.SolutionGuide.Remove(data);
             await dbContext.SaveChangesAsync();
             return mapper.Map<SolutionGuideResponseDto?>(data);
+        }
+
+        public async Task<bool> UploadSolutionGuideFiles(int modelId, string Model, List<IFormFile> files = null)
+        {
+
+            if (files == null)
+            {
+                return false;
+            }
+            foreach (var f in files)
+            {
+                var uploadedFile = await fileService.UploadFile(f, Model, UploadDir);
+                if (uploadedFile != null)
+                {
+                    var solutionGuideFile = new SolutionGuideFile()
+                    {
+                        Name = uploadedFile.FileName,
+                        OriginalName = uploadedFile.OriginalName,
+                        MimeType = uploadedFile.Extension,
+                        Path = uploadedFile.Path,
+                        Size = uploadedFile.ByteSize,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        SolutionGuideId = modelId
+                    };
+                    await dbContext.SolutionGuideFile.AddAsync(solutionGuideFile);
+                    await dbContext.SaveChangesAsync();
+                }
+            }
+
+            return true;
+        }
+
+        public Task<SolutionGuideResponseDto?> Update(int id, SolutionGuideRequestDto request)
+        {
+            throw new NotImplementedException();
         }
     }
 }

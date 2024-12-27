@@ -1,4 +1,6 @@
-﻿namespace Ticketing.API.Model.Domain
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Ticketing.API.Model.Domain
 {
     public class File : Base<int>
     {
@@ -11,14 +13,5 @@
         public double? Size { get; set; }
 
         public string? Path { get; set; }
-
-        public string Model { get; set; }
-
-        public int ModelId { get; set; }    
-
-        // Navigation property to TicketFile
-        public TicketFile TicketFile { get; set; }
-        public SolutionGuideFile SolutionGuideFile { get; set; }
-
     }
 }

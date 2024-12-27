@@ -12,19 +12,22 @@ using Ticketing.API.Model.Dto.Requuest;
 using Ticketing.API.Repositories.Interfaces;
 using TicketResponseDto = Ticketing.API.Model.Dto.TicketResponseDto;
 using Ticket = Ticketing.API.Model.Domain.Ticket;
+using Ticketing.API.Services;
 
 
 namespace Ticketing.API.Repositories
 {
     public class TicketRepository : BaseRepository<TicketResponseDto>, ITicketRepository
     {
-        private readonly IFileRepository fileRepository;
+        private readonly IFileUploadService fileService;
         private readonly IMapper mapper;
+        private static readonly string UploadDir = "Uploads/Ticket";
 
-        public TicketRepository(TicketingDbContext dbContext , IFileRepository fileRepository , IMapper mapper) : base(dbContext)
+        public TicketRepository(TicketingDbContext dbContext , IFileUploadService fileService, IMapper mapper) : base(dbContext)
         {
-            this.fileRepository = fileRepository;
+            
             this.mapper = mapper;
+            this.fileService = fileService;
         }
 
         public async override Task<PaginatedModel<TicketResponseDto>> GetPaginatedData(int pageNumber, int pageSize)
@@ -48,7 +51,6 @@ namespace Ticketing.API.Repositories
             var data =  await dbContext.Ticket
                         .Include(ticket => ticket.Category)
                         .Include(ticket => ticket.TicketFiles)
-                        .ThenInclude(ticketFile => ticketFile.File)
                         .FirstOrDefaultAsync(x => x.Id == id);
             return mapper.Map<TicketResponseDto>(data); ; 
         }
@@ -121,63 +123,56 @@ namespace Ticketing.API.Repositories
 
         }
 
-        public async Task<IEnumerable<Model.Domain.File>?> UploadTicketFiles(int TicketId , string Model="Ticket" , List<IFormFile> files = null)
+        public async Task<Boolean> UploadTicketFiles(int TicketId , string Model="Ticket" , List<IFormFile> files = null)
         {
             if(files == null)
             {
-                return null;
+                return false;
             }
-
-            var  fileList = await fileRepository.UploadFiles(files, "Ticket" , "Uploads/Tickets/" , TicketId);
-            await SaveTicketFiles(TicketId , fileList);
-            return fileList;
-        }
-
-        public async Task<IEnumerable<TicketFile>> SaveTicketFiles(int TicketId , IEnumerable<Model.Domain.File> fileList)
-        {
-            var ticketFiles = new List<TicketFile>();
-            foreach (var file in fileList)
+            foreach(var f in files)
             {
-                ticketFiles.Add
-                (
-                    new TicketFile()
+                var uploadedFile = await fileService.UploadFile(f, Model, UploadDir);
+                if(uploadedFile != null)
+                {
+                    var ticketFile = new TicketFile()
                     {
-                        TicketId = TicketId,
-                        FileId = file.Id,
-                    }
-                );
+                        Name = uploadedFile.FileName,
+                        OriginalName = uploadedFile.OriginalName,
+                        MimeType = uploadedFile.Extension,
+                        Path = uploadedFile.Path,
+                        Size = uploadedFile.ByteSize,
+                        CreatedAt = DateTime.Now,
+                        UpdatedAt = DateTime.Now,
+                        TicketId = TicketId
+                    };
+                    await dbContext.TicketFile.AddAsync(ticketFile);
+                    await dbContext.SaveChangesAsync();
+                }
             }
-            await dbContext.TicketFile.AddRangeAsync(ticketFiles);
-            await dbContext.SaveChangesAsync();
-            return ticketFiles;
+
+            return true;
         }
 
-        public async Task<TicketResponseDto ?> Delete(int id)
+       
+
+        public async Task<TicketResponseDto?> Delete(int id)
         {
             var ticket = await dbContext.Ticket
                         .Include(ticket => ticket.TicketFiles)
-                        .ThenInclude(tf => tf.File)
                         .FirstOrDefaultAsync(x => x.Id == id);
-            if (ticket == null)
+
+            if(ticket == null)
             {
                 return null;
             }
 
-            // Delete Uploaded Files From Storage and Database
-            if(ticket.TicketFiles !=  null && ticket.TicketFiles.Count > 0)
+            // Delete Uploaded Files From Uploads Directory
+            if(ticket.TicketFiles != null && ticket.TicketFiles.Count > 0)
             {
-                foreach(var f in ticket.TicketFiles)
+                foreach(var file in ticket.TicketFiles)
                 {
-                    if(f != null)
-                    {
-                        await fileRepository.DeleteFile("Uploads/Tickets/" , f.File.Name , "Ticket", (int)f.File.ModelId);
-                    }
-
+                    fileService.DeleteFileIfExists(UploadDir, file.Name);
                 }
-                dbContext.TicketFile.RemoveRange(ticket.TicketFiles);
-
-                //var filesInDb = await dbContext.Files.Where(rows => rows.ModelId == ticket.Id && rows.Model == "Ticket").ToListAsync();
-                //dbContext.Files.RemoveRange(filesInDb);
             }
             dbContext.Ticket.Remove(ticket);
             await dbContext.SaveChangesAsync();

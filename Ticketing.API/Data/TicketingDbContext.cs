@@ -14,8 +14,11 @@ namespace Ticketing.API.Data
         public DbSet<Ticket> Ticket { get; set; }
         public DbSet<Model.Domain.TicketFile> TicketFile { get; set; }
 
-        public DbSet<Model.Domain.File> Files { get; set; }
+       // public DbSet<Model.Domain.File> Files { get; set; }
         public DbSet<Model.Domain.SolutionGuide> SolutionGuide { get; set; }
+
+        public DbSet<Model.Domain.SolutionGuideFile> SolutionGuideFile { get; set; }
+
 
 
         public TicketingDbContext(DbContextOptions<TicketingDbContext> dbContextOptions):base(dbContextOptions)
@@ -33,29 +36,20 @@ namespace Ticketing.API.Data
                 .HasForeignKey(t => t.UserId)
                 .IsRequired(false);
 
-            modelBuilder.Entity<TicketFile>()
-                .HasOne(e => e.Ticket)
-                .WithMany(t => t.TicketFiles)
+            modelBuilder.Entity<Ticket>()
+                .HasMany(e => e.TicketFiles)
+                .WithOne(tf => tf.Ticket)
                 .HasForeignKey(t => t.TicketId)
-                .IsRequired(true);
-
-            modelBuilder.Entity<TicketFile>()
-                .HasOne(e => e.File)
-                .WithOne(e => e.TicketFile)
-                .HasForeignKey<TicketFile>(e => e.FileId)
+                .IsRequired(false)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<SolutionGuideFile>()
-                .HasOne(e => e.SolutionGuide)
-                .WithMany(t => t.SolutionGuideFiles)
-                .HasForeignKey(t => t.SolutionGuideId)
-                .IsRequired(true);
+            modelBuilder.Entity<SolutionGuide>()
+                 .HasMany(e => e.SolutionGuideFiles)
+                 .WithOne(sg => sg.SolutionGuide)
+                 .HasForeignKey(t => t.SolutionGuideId)
+                 .IsRequired(false)
+                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<SolutionGuideFile>()
-               .HasOne(e => e.File)
-               .WithOne(t => t.SolutionGuideFile)
-               .HasForeignKey<SolutionGuideFile>(t => t.SolutionGuideId)
-               .IsRequired(true);
 
             modelBuilder.Entity<TicketDiscussion>()
                 .HasOne(e => e.Ticket)

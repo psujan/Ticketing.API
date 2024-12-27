@@ -13,16 +13,13 @@ namespace Ticketing.API.MapperProfiles
             CreateMap<User, UserResponseDto>();
             CreateMap<Category , CategoryDto>();
             CreateMap<Model.Domain.File , FileResponseDto>();
-            CreateMap<SolutionGuide, SolutionGuideResponseDto>().ForMember(dest => dest.User, opt => opt.MapFrom(src => new UserResponseDto
-            {
-                Id = src.User.Id,
-                Email = src.User.Email,
-            }));
-            // .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.Files)); 
+            CreateMap<SolutionGuide, SolutionGuideResponseDto>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
+                .ForMember(dest => dest.Files, opt => opt.MapFrom(src => src.SolutionGuideFiles)); 
             CreateMap<Ticket, TicketResponseDto>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
                 .ForMember(dest => dest.Files, 
-                    opt => opt.MapFrom(src => src.TicketFiles.Select(tf => tf.File)));
+                    opt => opt.MapFrom(src => src.TicketFiles));
         }
     }
 }

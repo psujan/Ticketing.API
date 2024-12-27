@@ -58,7 +58,6 @@ namespace Ticketing.API.Services
              */
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
-            services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<IFileUploadService, FileUploadService>();
             services.AddScoped<ISolutionGuideRepository , SolutionGuideRepository>();
             services.AddScoped<ITicketDiscussionRepository, TicketDiscussionRepository>();
