@@ -134,9 +134,36 @@ namespace Ticketing.API.Repositories
             return true;
         }
 
-        public Task<SolutionGuideResponseDto?> Update(int id, SolutionGuideRequestDto request)
+        public async Task<SolutionGuideResponseDto?> Update(int id, SolutionGuideRequestDto request)
         {
-            throw new NotImplementedException();
+            var user = await uRep.GetUserByUserName(request.UserName);
+            if(user == null)
+            {
+                return null;
+            }
+
+            var solutionGuide = await dbContext.SolutionGuide.FindAsync(id);
+            if (solutionGuide == null)
+            {
+                return null;
+            }
+
+            if (request.Files != null)
+            {
+                await UploadSolutionGuideFiles(solutionGuide.Id, "SolutionGuide", request.Files);
+
+            }
+
+            // Update Ticket Domain
+            solutionGuide.Title = request.Title;
+            solutionGuide.Details = request.Details;
+            solutionGuide.Status = request.Status;
+            solutionGuide.UserId = user.Id;
+            solutionGuide.UpdatedAt = DateTime.Now;
+            await dbContext.SaveChangesAsync();
+
+
+            return mapper.Map<SolutionGuideResponseDto>(solutionGuide);
         }
     }
 }

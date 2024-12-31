@@ -13,15 +13,14 @@ namespace Ticketing.API.Model.Dto
 
         public string Status { get; set; }
 
-       // public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; }
 
-       // public DateTime UpdatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public UserResponseDto User { get; set; }
 
         //public Domain.File Files { get; set; }
-
         
-       public List<FileResponseDto>? Files { get; set; }
+        public List<FileResponseDto>? Files { get; set; }
     }
 }

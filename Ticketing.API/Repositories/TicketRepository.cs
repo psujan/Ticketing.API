@@ -21,7 +21,7 @@ namespace Ticketing.API.Repositories
     {
         private readonly IFileUploadService fileService;
         private readonly IMapper mapper;
-        private static readonly string UploadDir = "Uploads/Ticket";
+        private static readonly string UploadDir = "Uploads/Ticket/";
 
         public TicketRepository(TicketingDbContext dbContext , IFileUploadService fileService, IMapper mapper) : base(dbContext)
         {

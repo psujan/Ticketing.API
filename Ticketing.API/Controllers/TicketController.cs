@@ -61,17 +61,10 @@ namespace Ticketing.API.Controllers
         [Consumes("multipart/form-data")]
         public async  Task<IActionResult> Create([FromForm]TicketRequestDto ticketRequest)
         {
-            var ticket = await ticketRepository.Create(ticketRequest);
-            return Ok(new ApiResponse<TicketResponseDto>()
+            try
             {
-                Success = true,
-                Message = "Ticket Created Successfully",
-                Data = ticket
-            });
-            /*try
-            {
-                var ticket = await ticketRepository.Create(ticketRequest);
-                return Ok(new ApiResponse<Ticket>()
+               var ticket = await ticketRepository.Create(ticketRequest);
+                return Ok(new ApiResponse<TicketResponseDto>()
                 {
                     Success = true,
                     Message = "Ticket Created Successfully",
@@ -89,8 +82,7 @@ namespace Ticketing.API.Controllers
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
-            }*/
-
+            }
         }
 
         [HttpPut]

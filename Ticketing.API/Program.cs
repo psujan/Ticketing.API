@@ -5,6 +5,7 @@ using DotNetEnv;
 using Ticketing.API.Data.Seeder;
 using System.Text.Json.Serialization;
 using Ticketing.API.MapperProfiles;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
@@ -47,6 +48,19 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseStaticFiles();
+// Serve static files from the "Uploads" folder
+/*var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
+if (!Directory.Exists(uploadsFolder))
+{
+    Directory.CreateDirectory(uploadsFolder);
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadsFolder),
+    RequestPath = "/Uploads/" // Makes the files accessible at "/Uploads"
+});*/
 
 app.MapControllers();
 app.MapGet("/", () => "Welcome to Ticketing API");

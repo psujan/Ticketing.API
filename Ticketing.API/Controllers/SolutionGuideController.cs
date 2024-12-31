@@ -42,14 +42,8 @@ namespace Ticketing.API.Controllers
         [ValidateModel]
         public async Task<IActionResult> Create(SolutionGuideRequestDto request)
         {
-            var data = await solutionGuideRepository.Create(request);
-            return Ok(new ApiResponse<SolutionGuideResponseDto>()
-            {
-                Success = true,
-                Message = "Solution Guide Created Successfully",
-                Data = data
-            });
-            /*try
+            
+            try
             {
                 var data = await solutionGuideRepository.Create(request);
                 return Ok(new ApiResponse<SolutionGuideResponseDto>()
@@ -70,7 +64,7 @@ namespace Ticketing.API.Controllers
                 {
                     StatusCode = (int)HttpStatusCode.InternalServerError
                 };
-            }*/
+            }
         }
 
         //[Authorize]
@@ -99,6 +93,37 @@ namespace Ticketing.API.Controllers
                 {
                     Success = data != null ? true : false,
                     Message = data != null ? "Solution Guide Deleted Successfully" : "Solution Guide Not Found",
+                    Data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
+
+        [HttpPut]
+        [Authorize]
+        [ValidateModel]
+        [Route("{id}")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromForm] SolutionGuideRequestDto request)
+        {
+            try
+            {
+                var data = await solutionGuideRepository.Update(id, request);
+                return Ok(new ApiResponse<SolutionGuideResponseDto>()
+                {
+                    Success = data != null ? true : false,
+                    Message = data != null ? "Solution Guide Updated Successfully" : "Unable to update solution guide",
                     Data = data
                 });
             }
