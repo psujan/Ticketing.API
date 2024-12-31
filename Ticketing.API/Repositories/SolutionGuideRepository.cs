@@ -48,6 +48,11 @@ namespace Ticketing.API.Repositories
         public async Task<SolutionGuideResponseDto> Create(SolutionGuideRequestDto request)
         {
             var user = await uRep.GetUserByUserName(request.UserName);
+            if (user == null)
+            {
+                throw new Exception("User Not Found");
+                //return null;
+            }
             SolutionGuide solutionGuide =  new SolutionGuide()
             {
                 Title = request.Title,
@@ -139,7 +144,8 @@ namespace Ticketing.API.Repositories
             var user = await uRep.GetUserByUserName(request.UserName);
             if(user == null)
             {
-                return null;
+                throw new Exception("User Not Found");
+                //return null;
             }
 
             var solutionGuide = await dbContext.SolutionGuide.FindAsync(id);
