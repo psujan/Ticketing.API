@@ -20,6 +20,8 @@ namespace Ticketing.API.MapperProfiles
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User))
                 .ForMember(dest => dest.Files, 
                     opt => opt.MapFrom(src => src.TicketFiles));
+            CreateMap<TicketDiscussion, TicketDiscussionResponseDto>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
         }
     }
 }

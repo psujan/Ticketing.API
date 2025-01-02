@@ -14,6 +14,6 @@ namespace Ticketing.API.Model.Dto.Requuest
         public int TicketId { get; set; }
 
         [Required]
-        public string UserId { get; set; }
+        public string UserName { get; set; }
     }
 }

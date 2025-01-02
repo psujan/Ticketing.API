@@ -9,5 +9,7 @@ namespace Ticketing.API.Model.Dto.Requuest
 
         [Required]
         public string Password { get; set; }
+
+        public string? FullName { get; set; }
     }
 }

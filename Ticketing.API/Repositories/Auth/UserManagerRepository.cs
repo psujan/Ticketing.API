@@ -18,7 +18,8 @@ namespace Ticketing.API.Repositories.Auth
             var user = new User
             {
                 UserName = request.UserName,
-                Email = request.UserName
+                Email = request.UserName,
+                FullName = request.FullName
             };
 
             var identityResult = await userManager.CreateAsync(user ,request.Password);

@@ -6,6 +6,7 @@ using Ticketing.API.Repositories.Interfaces;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Ticketing.API.Model.Dto.Requuest;
+using Ticketing.API.Model.Dto;
 
 namespace Ticketing.API.Controllers
 {
@@ -24,17 +25,11 @@ namespace Ticketing.API.Controllers
         [Authorize]
         public async Task<IActionResult> AddComment([FromBody]TicketDiscussionRequestDto request)
         {
-           /* var discussion = await discussionRepository.Create(request);
-            return Ok(new ApiResponse<TicketDiscussion>()
-            {
-                Success = true,
-                Message = "Comment Added Successfully",
-                Data = discussion
-            });*/
+           
             try
             {
                 var discussion = await discussionRepository.Create(request);
-                return Ok(new ApiResponse<TicketDiscussion>()
+                return Ok(new ApiResponse<TicketDiscussionResponseDto?>()
                 {
                     Success = true,
                     Message = "Comment Added Successfully",

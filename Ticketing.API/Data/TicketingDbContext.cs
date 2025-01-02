@@ -8,7 +8,7 @@ namespace Ticketing.API.Data
 {
     public class TicketingDbContext : IdentityDbContext<User>
     {
-
+        
         public DbSet<User> User { get; set; }
         public DbSet<Category> Category { get; set; }
         public DbSet<Ticket> Ticket { get; set; }
