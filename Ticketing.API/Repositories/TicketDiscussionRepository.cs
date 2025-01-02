@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using Microsoft.EntityFrameworkCore;
 using Ticketing.API.Data;
 using Ticketing.API.Model.Domain;
 using Ticketing.API.Model.Dto;
@@ -69,9 +70,11 @@ namespace Ticketing.API.Repositories
             return mapper.Map<TicketDiscussionResponseDto>(discussion);
         }
 
-        public Task<IEnumerable<TicketDiscussionResponseDto>> GetAll(int ticketId)
+        public async Task<IEnumerable<TicketDiscussionResponseDto>> GetAll(int ticketId)
         {
-            throw new NotImplementedException();
+            var status = await TicketExist(ticketId);
+            var discussions = await dbContext.Set<TicketDiscussion>().Where(x => x.TicketId == ticketId).ToListAsync();
+            return mapper.Map<IEnumerable<TicketDiscussionResponseDto>>(discussions);
         }
     }
 }

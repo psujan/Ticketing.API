@@ -50,5 +50,36 @@ namespace Ticketing.API.Controllers
             }
 
         }
+
+        [HttpGet]
+        [Route("{id}")]
+        [Authorize]
+        public async Task<IActionResult> GetAll([FromRoute] int id)
+        {
+
+            try
+            {
+                var discussion = await discussionRepository.GetAll(id);
+                return Ok(new ApiResponse<IEnumerable<TicketDiscussionResponseDto>>()
+                {
+                    Success = true,
+                    Message = "Comments Fetched Successfully",
+                    Data = discussion
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+
+        }
     }
 }
