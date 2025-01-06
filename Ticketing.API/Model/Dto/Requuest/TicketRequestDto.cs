@@ -12,7 +12,7 @@ namespace Ticketing.API.Model.Dto.Requuest
 
         [Required]
         [TicketStatus]
-        public string Status { get; set; }  // Opened , InProgress, Reopend , Resolved 
+        public string Status { get; set; }  
 
         [Required]
         public string Details { get; set; }

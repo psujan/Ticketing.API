@@ -37,7 +37,7 @@ namespace Ticketing.API.Controllers
             });
         }
 
-        [Authorize]
+        //[Authorize]  // Visitor must be able to access list to create ticket
         [HttpGet]
         [Route("list")] // For dropdown
         public async Task<IActionResult> GetCategoryList([FromQuery] string status = "active")

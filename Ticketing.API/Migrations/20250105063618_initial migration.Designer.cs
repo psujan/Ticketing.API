@@ -12,8 +12,8 @@ using Ticketing.API.Data;
 namespace Ticketing.API.Migrations
 {
     [DbContext(typeof(TicketingDbContext))]
-    [Migration("20241223080038_AddColumnsToFile")]
-    partial class AddColumnsToFile
+    [Migration("20250105063618_initial migration")]
+    partial class initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -214,48 +214,6 @@ namespace Ticketing.API.Migrations
                     b.ToTable("Category");
                 });
 
-            modelBuilder.Entity("Ticketing.API.Model.Domain.File", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("MimeType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Model")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ModelId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OriginalName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Path")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<double?>("Size")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Files");
-                });
-
             modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>
                 {
                     b.Property<int>("Id")
@@ -301,16 +259,34 @@ namespace Ticketing.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FileId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MimeType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Size")
+                        .HasColumnType("float");
 
                     b.Property<int>("SolutionGuideId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("SolutionGuideId")
-                        .IsUnique();
+                    b.HasIndex("SolutionGuideId");
 
                     b.ToTable("SolutionGuideFile");
                 });
@@ -406,16 +382,32 @@ namespace Ticketing.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("FileId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MimeType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OriginalName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double?>("Size")
+                        .HasColumnType("float");
 
                     b.Property<int>("TicketId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
 
-                    b.HasIndex("FileId")
-                        .IsUnique();
+                    b.HasKey("Id");
 
                     b.HasIndex("TicketId");
 
@@ -430,6 +422,9 @@ namespace Ticketing.API.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -440,6 +435,9 @@ namespace Ticketing.API.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -554,19 +552,10 @@ namespace Ticketing.API.Migrations
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuideFile", b =>
                 {
-                    b.HasOne("Ticketing.API.Model.Domain.File", "File")
-                        .WithOne("SolutionGuideFile")
-                        .HasForeignKey("Ticketing.API.Model.Domain.SolutionGuideFile", "SolutionGuideId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Ticketing.API.Model.Domain.SolutionGuide", "SolutionGuide")
                         .WithMany("SolutionGuideFiles")
                         .HasForeignKey("SolutionGuideId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("File");
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("SolutionGuide");
                 });
@@ -609,30 +598,12 @@ namespace Ticketing.API.Migrations
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.TicketFile", b =>
                 {
-                    b.HasOne("Ticketing.API.Model.Domain.File", "File")
-                        .WithOne("TicketFile")
-                        .HasForeignKey("Ticketing.API.Model.Domain.TicketFile", "FileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Ticketing.API.Model.Domain.Ticket", "Ticket")
                         .WithMany("TicketFiles")
                         .HasForeignKey("TicketId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("File");
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Ticket");
-                });
-
-            modelBuilder.Entity("Ticketing.API.Model.Domain.File", b =>
-                {
-                    b.Navigation("SolutionGuideFile")
-                        .IsRequired();
-
-                    b.Navigation("TicketFile")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Ticketing.API.Model.Domain.SolutionGuide", b =>

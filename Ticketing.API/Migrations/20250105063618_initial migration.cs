@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Ticketing.API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialMigration : Migration
+    public partial class initialmigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,6 +32,8 @@ namespace Ticketing.API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<bool>(type: "bit", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -67,25 +69,6 @@ namespace Ticketing.API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Files",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OriginalName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Size = table.Column<double>(type: "float", nullable: true),
-                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Files", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -257,17 +240,17 @@ namespace Ticketing.API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SolutionGuideId = table.Column<int>(type: "int", nullable: false),
-                    FileId = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OriginalName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Size = table.Column<double>(type: "float", nullable: true),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_SolutionGuideFile", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_SolutionGuideFile_Files_SolutionGuideId",
-                        column: x => x.SolutionGuideId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SolutionGuideFile_SolutionGuide_SolutionGuideId",
                         column: x => x.SolutionGuideId,
@@ -313,17 +296,17 @@ namespace Ticketing.API.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TicketId = table.Column<int>(type: "int", nullable: false),
-                    FileId = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OriginalName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    MimeType = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Size = table.Column<double>(type: "float", nullable: true),
+                    Path = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_TicketFile", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_TicketFile_Files_FileId",
-                        column: x => x.FileId,
-                        principalTable: "Files",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TicketFile_Ticket_TicketId",
                         column: x => x.TicketId,
@@ -390,8 +373,7 @@ namespace Ticketing.API.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_SolutionGuideFile_SolutionGuideId",
                 table: "SolutionGuideFile",
-                column: "SolutionGuideId",
-                unique: true);
+                column: "SolutionGuideId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ticket_CategoryId",
@@ -412,12 +394,6 @@ namespace Ticketing.API.Migrations
                 name: "IX_TicketDiscussion_UserId",
                 table: "TicketDiscussion",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_TicketFile_FileId",
-                table: "TicketFile",
-                column: "FileId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_TicketFile_TicketId",
@@ -457,9 +433,6 @@ namespace Ticketing.API.Migrations
 
             migrationBuilder.DropTable(
                 name: "SolutionGuide");
-
-            migrationBuilder.DropTable(
-                name: "Files");
 
             migrationBuilder.DropTable(
                 name: "Ticket");
