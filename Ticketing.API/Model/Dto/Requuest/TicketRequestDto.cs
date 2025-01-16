@@ -22,9 +22,11 @@ namespace Ticketing.API.Model.Dto.Requuest
 
         public string? UserId { get; set; }
 
+        [RequiredIf("UserId" , null , ErrorMessage ="Email is required")]
         [EmailAddress]
         public string? IssuerEmail { get; set; }
 
+        [RequiredIf("UserId", null, ErrorMessage = "Phone number is required")]
         public string? IssuerPhone { get; set; }
 
         [MaxFileSize(2 * 1024 * 1024)]

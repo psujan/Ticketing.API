@@ -52,5 +52,34 @@ namespace Ticketing.API.Controllers
                 };
             }
         }
+
+        [HttpGet]
+        [Authorize]
+        [Route("ticket")]
+        public async Task<IActionResult> GetUserTickets([FromQuery] string userName , int pageNo = 1, int pageSize= 10)
+        {
+            try
+            {
+                var data = await ticketRepository.GetUserTickets(userName, pageNo, pageSize);
+                return Ok(new ApiResponse<PaginatedModel<TicketResponseDto>>()
+                {
+                    Success = true,
+                    Message = "Data Fetched Successfully",
+                    Data = data
+                });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new ApiResponse<string>()
+                {
+                    Success = false,
+                    Message = ex.Message,
+                    Data = ""
+                })
+                {
+                    StatusCode = (int)HttpStatusCode.InternalServerError
+                };
+            }
+        }
     }
 }

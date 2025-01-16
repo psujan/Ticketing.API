@@ -10,5 +10,7 @@ namespace Ticketing.API.Repositories.Interfaces.Auth
         Task<Boolean> CheckPassword(User user, string password);
         Task<List<string>?> GetRoles(User user);
 
+        Task<User?> GetUserById(string id);
+
     }
 }

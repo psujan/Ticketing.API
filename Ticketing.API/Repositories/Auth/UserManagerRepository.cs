@@ -65,5 +65,11 @@ namespace Ticketing.API.Repositories.Auth
             return user;
         }
 
+        public async Task<User?> GetUserById(string id)
+        {
+            var user =  await userManager.FindByIdAsync(id);
+            return user;
+        }
+
     }
 }

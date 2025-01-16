@@ -13,6 +13,7 @@ using Ticketing.API.Repositories.Interfaces;
 using TicketResponseDto = Ticketing.API.Model.Dto.TicketResponseDto;
 using Ticket = Ticketing.API.Model.Domain.Ticket;
 using Ticketing.API.Services;
+using Ticketing.API.Repositories.Interfaces.Auth;
 
 
 namespace Ticketing.API.Repositories
@@ -21,12 +22,14 @@ namespace Ticketing.API.Repositories
     {
         private readonly IFileUploadService fileService;
         private readonly IMapper mapper;
+        private readonly IUserManagerRepository uRep;
         private static readonly string UploadDir = "Uploads/Ticket/";
 
-        public TicketRepository(TicketingDbContext dbContext , IFileUploadService fileService, IMapper mapper) : base(dbContext)
+        public TicketRepository(TicketingDbContext dbContext , IFileUploadService fileService, IMapper mapper , IUserManagerRepository uRep) : base(dbContext)
         {
             
             this.mapper = mapper;
+            this.uRep = uRep;
             this.fileService = fileService;
         }
 
@@ -55,8 +58,24 @@ namespace Ticketing.API.Repositories
             return mapper.Map<TicketResponseDto>(data); ; 
         }
 
+        public async Task<User?> CheckUser(TicketRequestDto ticketRequest)
+        {
+            if (ticketRequest.UserId != null)
+            {
+                var user = await uRep.GetUserById(ticketRequest.UserId);
+                if (user == null)
+                {
+                    throw new Exception($"User with id {ticketRequest.UserId} is not found");
+                }
+                return user;
+            }
+            return null;
+        }
+
         public async Task<TicketResponseDto> Create(TicketRequestDto ticketRequestDto)
         {
+            
+            await CheckUser(ticketRequestDto);
             var tFiles = ticketRequestDto.Files;
             Ticket ticket = new Ticket()
             {
@@ -84,6 +103,7 @@ namespace Ticketing.API.Repositories
 
         public async Task<TicketResponseDto?> Update(int id, TicketRequestDto ticketRequestDto)
         {
+            await CheckUser(ticketRequestDto);
             var ticket = await dbContext.Ticket.FindAsync(id);
             if (ticket == null)
             {
@@ -190,6 +210,30 @@ namespace Ticketing.API.Repositories
             dbContext.TicketFile.Remove(data);
             await dbContext.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<PaginatedModel<TicketResponseDto>> GetUserTickets(string userName, int pageNumber, int pageSize) 
+        {
+            var user = await uRep.GetUserByUserName(userName);
+
+            if(user == null)
+            {
+                throw new Exception("User Not Found");
+            }
+
+            var rows = dbContext.Ticket
+                        .Where(t => t.UserId == user.Id)
+                        .Include(ticket => ticket.Category)
+                        .Include(ticket => ticket.User)
+                        .Include(ticket => ticket.TicketFiles)
+                        .Skip((pageNumber - 1) * pageSize)
+                        .Take(pageSize)
+                        .AsNoTracking();
+            var data = await rows.ToListAsync();
+            var totalCount = await dbContext.Ticket.CountAsync();
+            var resultCount = rows.Count();
+            var mappedData = mapper.Map<IEnumerable<TicketResponseDto>>(data);
+            return new PaginatedModel<TicketResponseDto>(mappedData, totalCount, resultCount, pageNumber, pageSize);
         }
     }
 }
