@@ -9,11 +9,8 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 DotNetEnv.Env.Load();
-System.Diagnostics.Debug.WriteLine("Hello APP");
 
-System.Diagnostics.Debug.WriteLine(Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection"));
 builder.Configuration.AddEnvironmentVariables();
-// Add services to the container.
 
 //Enable Cors
 builder.Services.AddCors( options =>
